@@ -1,0 +1,6 @@
+{
+  "name": "Multi-Agent DevStudio",
+  "description": "Autonomous Multi-Agent Web Development Simulation featuring UI/UX Architect, Lead Fullstack Dev, and QA Engineer with real-time code iteration and live sandboxing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
