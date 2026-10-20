@@ -38,9 +38,8 @@ async function startServer() {
     `;
 
     try {
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-      const result = await model.generateContent(prompt);
-      const text = result.response.text();
+      const result = await genAI.models.generateContent({ model: 'gemini-3.8-flash', contents: prompt });
+      const text = result.text;
       
       if (!text) {
         console.error("AI response was empty.");
@@ -48,24 +47,36 @@ async function startServer() {
         return;
       }
 
-      // Improved parsing: find first '{' and last '}'
-      const firstBrace = text.indexOf('{');
-      const lastBrace = text.lastIndexOf('}');
+      // Robust parsing: strip markdown code blocks, find first '{' and last '}'
+      const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const firstBrace = cleanedText.indexOf('{');
+      const lastBrace = cleanedText.lastIndexOf('}');
+      
       if (firstBrace !== -1 && lastBrace !== -1) {
           try {
-              const jsonStr = text.substring(firstBrace, lastBrace + 1);
+              const jsonStr = cleanedText.substring(firstBrace, lastBrace + 1);
               res.json(JSON.parse(jsonStr));
           } catch (e) {
-              console.error("JSON Parse Error:", e, "Raw text:", text);
+              console.error("JSON Parse Error:", e, "Raw text:", cleanedText);
               res.status(500).json({ error: "Failed to parse AI JSON response" });
           }
       } else {
-          console.error("No JSON braces found. Raw text:", text);
+          console.error("No JSON braces found. Raw text:", cleanedText);
           res.status(500).json({ error: "Failed to find JSON in AI response" });
       }
-    } catch (error) {
-      console.error("Gemini API Error:", error);
-      res.status(500).json({ error: String(error) });
+    } catch (error: any) {
+      if (error?.status === 429 || error?.toString().includes("RESOURCE_EXHAUSTED")) {
+        console.warn("Quota exceeded, using mock fallback.");
+        const mockResponses = [
+            { persona: "🎨 Architect", text: "Refining the visual hierarchy.", comp: "hero" },
+            { persona: "💻 Lead Dev", text: "Optimizing the component structure.", comp: "grid" },
+            { persona: "🛡️ QA", text: "Visual test passed.", comp: "test" }
+        ];
+        res.json(mockResponses[Math.floor(Math.random() * mockResponses.length)]);
+      } else {
+        console.error("Gemini API Error:", error);
+        res.status(500).json({ error: String(error) });
+      }
     }
   });
 

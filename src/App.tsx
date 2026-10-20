@@ -14,6 +14,7 @@ export default function App() {
   const [prompt, setPrompt] = useState("");
   const [activeTask, setActiveTask] = useState<string | null>(null);
   const [previewComp, setPreviewComp] = useState<string | null>(null);
+  const [lastCode, setLastCode] = useState<string | null>(null);
   const logEndRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -46,6 +47,7 @@ export default function App() {
         
         if (isMounted && data.persona) {
           setPreviewComp(data.comp);
+          setLastCode(data.code || null);
           setLogs((prev) => {
             const newLog = { id: Date.now(), text: `[${new Date().toLocaleTimeString()}] ${data.persona}: ${data.text}` };
             return [...prev, newLog].slice(-50);
@@ -67,13 +69,12 @@ export default function App() {
   }, [logs]);
 
   const renderPreview = () => {
-    switch(previewComp) {
-      case "hero": return <div className="p-8 bg-slate-800 text-white rounded-lg"><h1>Hero Section</h1></div>;
-      case "grid": return <div className="grid grid-cols-2 gap-4 p-4"><div className="h-20 bg-slate-800 rounded"></div><div className="h-20 bg-slate-800 rounded"></div></div>;
-      case "filter": return <div className="flex gap-2 p-4"><button className="px-2 border rounded border-slate-700">All</button><button className="px-2 border rounded border-slate-700">Active</button></div>;
-      case "test": return <div className="p-4 bg-emerald-900 text-emerald-100 rounded">Test Passed</div>;
-      default: return <div className="text-slate-500">Collaborating on: {activeTask}</div>;
-    }
+    return (
+      <div className="space-y-4">
+        <div className="text-slate-500 text-sm">Visualizing: {previewComp || "..."}</div>
+        {lastCode && <pre className="bg-slate-950 p-4 rounded text-xs font-mono overflow-x-auto text-emerald-400"><code>{lastCode}</code></pre>}
+      </div>
+    );
   };
 
   return (
