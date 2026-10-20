@@ -69,10 +69,20 @@ export default function App() {
   }, [logs]);
 
   const renderPreview = () => {
+    const mockUI: Record<string, JSX.Element> = {
+        hero: <div className="p-8 bg-blue-900 rounded-lg text-white"><h1 className="text-2xl font-bold">Hero Title</h1><p>Welcome to your site.</p></div>,
+        grid: <div className="grid grid-cols-2 gap-2"><div className="h-16 bg-slate-700 rounded"></div><div className="h-16 bg-slate-700 rounded"></div></div>,
+        filter: <div className="flex gap-2"><div className="w-12 h-6 bg-slate-700 rounded"></div><div className="w-12 h-6 bg-slate-700 rounded"></div></div>,
+        test: <div className="p-4 bg-emerald-900 text-white rounded">Tests Passed!</div>,
+    };
+
     return (
       <div className="space-y-4">
         <div className="text-slate-500 text-sm">Visualizing: {previewComp || "..."}</div>
-        {lastCode && <pre className="bg-slate-950 p-4 rounded text-xs font-mono overflow-x-auto text-emerald-400"><code>{lastCode}</code></pre>}
+        <div className="border border-slate-700 p-2 rounded bg-black min-h-[150px]">
+             {mockUI[previewComp || ""] || <div className="text-slate-600">No component rendered yet.</div>}
+        </div>
+        {lastCode && <pre className="bg-slate-950 p-4 rounded text-[10px] font-mono overflow-x-auto text-emerald-400"><code>{lastCode}</code></pre>}
       </div>
     );
   };

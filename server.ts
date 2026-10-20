@@ -22,19 +22,24 @@ async function startServer() {
       You are an expert AI development team consisting of a UI/UX Architect, a Lead Fullstack Dev, and a QA Engineer.
       The user wants to build: "${task}".
       
-      Maintain a collaborative, expert tone. 
-      Do NOT loop or repeat previous messages.
-      Provide one concise action per message.
+      Previous conversation context: ${JSON.stringify(history.slice(-10))}
+
+      Determine the next persona in the sequence:
+      1. UI/UX Architect (Design the layout)
+      2. Lead Fullstack Dev (Write the React/Tailwind code)
+      3. QA Engineer (Verify the design and code)
+      
+      If the last action was by the Architect, the Dev must act.
+      If the last action was by the Dev, the QA must act.
+      If the last action was by the QA, the Architect must act.
       
       Return a JSON object: 
       {
-        "persona": "Persona Name",
-        "text": "The message here...",
+        "persona": "UI/UX Architect" | "Lead Fullstack Dev" | "QA Engineer",
+        "text": "Your professional, concise technical contribution...",
         "comp": "hero|container|test|grid|filter",
-        "code": "/* optional code snippet */"
+        "code": "/* actual React/Tailwind code if you are the Dev, otherwise empty */"
       }
-      
-      Current history: ${JSON.stringify(history.slice(-5))}
     `;
 
     try {
