@@ -44,109 +44,7 @@ interface LogItem {
   stage?: number;
 }
 
-interface WebsiteState {
-  title: string;
-  tagline: string;
-  theme: string;
-  stage: number;
-  currentSection: string;
-  navLinks: string[];
-  heroCTA: string;
-  stats: Array<{ label: string; value: string; change: string }>;
-  features: Array<{ id: string; title: string; desc: string }>;
-  categoryTabs: string[];
-  items: Array<{ id: string; name: string; status: string; latency: string; category: string }>;
-}
-
-function generateDomainData(prompt: string): WebsiteState {
-  const p = prompt.toLowerCase();
-  
-  if (p.includes('coffee') || p.includes('cafe') || p.includes('tea') || p.includes('roast') || p.includes('food') || p.includes('bakery')) {
-    return {
-      title: "Velvet Roast Coffee Co.",
-      tagline: "Single-Origin Artisan Beans Delivered Fresh",
-      theme: "amber",
-      stage: 1,
-      currentSection: "blueprint",
-      navLinks: ["Roasts", "Subscriptions", "Brew Guides", "Impact"],
-      heroCTA: "Subscribe for $18/mo",
-      categoryTabs: ["All", "Single Origin", "Cold Brew", "Espresso"],
-      stats: [
-        { label: "Origin Countries", value: "14", change: "Ethically Sourced" },
-        { label: "Roast Freshness", value: "48h", change: "Direct to Door" },
-        { label: "Customer Rating", value: "4.95 ★", change: "2,400+ reviews" }
-      ],
-      features: [
-        { id: "1", title: "Micro-Batch Roasting", desc: "Small-batch drum roasting tailored to highlight origin berry and cacao notes." },
-        { id: "2", title: "Direct Trade Guarantee", desc: "100% of farmers compensated at least 40% above the fair-trade price floor." },
-        { id: "3", title: "Compostable Eco-Pouch", desc: "Zero-plastic plant-based packaging that degrades naturally within 90 days." }
-      ],
-      items: [
-        { id: "ROAST-01", name: "Ethiopian Yirgacheffe Washed", status: "In Stock", latency: "$21.00", category: "Single Origin" },
-        { id: "ROAST-02", name: "Colombian Huila Geisha Reserve", status: "Limited", latency: "$28.50", category: "Single Origin" },
-        { id: "ROAST-03", name: "Nitro Cold Brew Concentrate (32oz)", status: "Popular", latency: "$16.00", category: "Cold Brew" },
-        { id: "ROAST-04", name: "Midnight Velvet Espresso Blend", status: "In Stock", latency: "$19.00", category: "Espresso" }
-      ]
-    };
-  }
-
-  if (p.includes('crypto') || p.includes('coin') || p.includes('trading') || p.includes('web3') || p.includes('nft') || p.includes('wallet') || p.includes('finance')) {
-    return {
-      title: "ApexChain Decentralized Terminal",
-      tagline: "Ultra-Low Latency Cross-Chain Asset Terminal",
-      theme: "emerald",
-      stage: 1,
-      currentSection: "blueprint",
-      navLinks: ["Markets", "DEX Terminal", "Staking Vaults", "Governance"],
-      heroCTA: "Connect Wallet (0x...)",
-      categoryTabs: ["All", "Layer 1", "DeFi", "Perpetuals"],
-      stats: [
-        { label: "24h Volume", value: "$4.82B", change: "+14.8%" },
-        { label: "Total Value Locked", value: "$12.4B", change: "+3.2%" },
-        { label: "Block Finality", value: "400ms", change: "Zero Reorg" }
-      ],
-      features: [
-        { id: "1", title: "MEV-Shielded Execution", desc: "Private mempool transaction routing eliminating frontrunning and sandwich attacks." },
-        { id: "2", title: "Cross-Chain Atomic Swaps", desc: "Trustless liquidity bridges across Ethereum, Solana, and Cosmos." },
-        { id: "3", title: "Self-Custodial Vaults", desc: "Smart contract vaults with programmable multi-sig time locks." }
-      ],
-      items: [
-        { id: "BTC-USD", name: "Bitcoin Perpetual ($68.4k)", status: "Bullish", latency: "+4.2%", category: "Layer 1" },
-        { id: "ETH-USD", name: "Ethereum Staked Asset", status: "Liquid", latency: "+6.1%", category: "Layer 1" },
-        { id: "SOL-USD", name: "Solana Supernode Yield", status: "Active", latency: "+8.9%", category: "Layer 1" },
-        { id: "UNI-V3", name: "Automated Liquidity Vault", status: "14.2% APY", latency: "Nominal", category: "DeFi" }
-      ]
-    };
-  }
-
-  const cleanTitle = prompt.slice(0, 24).replace(/[^a-zA-Z0-9\s]/g, '').trim() || "DevMatrix Cloud";
-  return {
-    title: cleanTitle,
-    tagline: prompt || "Next-Generation Autonomous Engineering Platform",
-    theme: "cyan",
-    stage: 1,
-    currentSection: "blueprint",
-    navLinks: ["Overview", "Capabilities", "Systems", "Security"],
-    heroCTA: "Deploy Workspace",
-    categoryTabs: ["All", "Core", "Security", "Telemetry"],
-    stats: [
-      { label: "Throughput", value: "99.98%", change: "+0.4%" },
-      { label: "Active Nodes", value: "1,420", change: "+12" },
-      { label: "P99 Latency", value: "14ms", change: "-2ms" }
-    ],
-    features: [
-      { id: "1", title: "Autonomous Orchestration", desc: `Multi-agent runtime specialized for ${prompt || 'cloud infrastructure'}.` },
-      { id: "2", title: "Defensive Type Security", desc: "Runtime input sanitization preventing script injection vectors." },
-      { id: "3", title: "Sub-Second Ingestion", desc: "High-density data streaming with memory-safe virtualized buffers." }
-    ],
-    items: [
-      { id: "SYS-01", name: `${cleanTitle.slice(0, 14)} Engine`, status: "Active", latency: "2ms", category: "Core" },
-      { id: "SYS-02", name: "Cryptographic Key Manager", status: "Verified", latency: "1ms", category: "Security" },
-      { id: "SYS-03", name: "Sliding Buffer Streamer", status: "Nominal", latency: "8ms", category: "Telemetry" },
-      { id: "SYS-04", name: "Automated Regression Harness", status: "Passed", latency: "4ms", category: "Security" }
-    ]
-  };
-}
+import { synthesizeDomainWebsite, WebsiteState } from './domainEngine';
 
 const BUILD_STAGES = [
   { id: 1, name: "Blueprint", persona: "🎨 Architect", comp: "blueprint", desc: "Design System & Wireframe" },
@@ -158,13 +56,14 @@ const BUILD_STAGES = [
 ];
 
 export default function App() {
-  const [hasStarted, setHasStarted] = useState<boolean>(true);
+  const [hasStarted, setHasStarted] = useState<boolean>(false);
   const [prompt, setPrompt] = useState("");
-  const [activeTask, setActiveTask] = useState<string>("Modern SaaS Operations Platform");
-  const [isStreaming, setIsStreaming] = useState<boolean>(true);
-  const [activePersona, setActivePersona] = useState<string>("🎨 UI/UX Architect");
+  const [activeTask, setActiveTask] = useState<string>("");
+  const [isStreaming, setIsStreaming] = useState<boolean>(false);
+  const [activePersona, setActivePersona] = useState<string>("🤖 Orchestrator");
   const [previewTab, setPreviewTab] = useState<'preview' | 'code' | 'qa'>('preview');
   const [viewportMode, setViewportMode] = useState<'desktop' | 'mobile'>('desktop');
+  const [mobileView, setMobileView] = useState<'preview' | 'chat'>('preview');
   const [isFocusPreview, setIsFocusPreview] = useState<boolean>(false);
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
   const [expandedThoughts, setExpandedThoughts] = useState<Record<number, boolean>>({});
@@ -172,7 +71,7 @@ export default function App() {
   const [currentBuildStage, setCurrentBuildStage] = useState<number>(1);
 
   // Progressive Live Website State
-  const [website, setWebsite] = useState<WebsiteState>(() => generateDomainData("Modern SaaS Operations Platform"));
+  const [website, setWebsite] = useState<WebsiteState>(() => synthesizeDomainWebsite("Modern SaaS Operations Platform"));
   const [activeWebsiteTab, setActiveWebsiteTab] = useState<string>("All");
   const [websiteFilter, setWebsiteFilter] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -184,21 +83,20 @@ export default function App() {
     action: string;
     section: string;
   }>({
-    persona: "🎨 UI/UX Architect",
-    action: "Stage 1: Architected design system and layout wireframe contract",
-    section: "blueprint"
+    persona: "🤖 Orchestrator",
+    action: "Agents on Standby: Waiting for user prompt",
+    section: "standby"
   });
 
   const [logs, setLogs] = useState<LogItem[]>([
     {
       id: 1,
       timestamp: new Date().toLocaleTimeString(),
-      persona: "🎨 UI/UX Architect",
-      thought: "Stage 1 / 6: Initializing architectural blueprint for Modern SaaS Operations Platform. Setting 60-30-10 slate foundation (#0B0F17) with high-contrast accents, typography scale, and layout grid.",
-      action: "Stage 1: Architected design system, color tokens, and layout wireframe contract.",
-      comp: "blueprint",
-      stage: 1,
-      code: `// Stage 1: Design Tokens & Base Canvas Layout\nexport const DESIGN_TOKENS = {\n  canvas: '#0B0F17',\n  surface: '#111827',\n  accent: '#10B981',\n  textPrimary: '#F8FAFC',\n  textSecondary: '#94A3B8'\n};`
+      persona: "🤖 Multi-Agent Orchestrator",
+      thought: "The engineering team (🎨 UI/UX Architect, 💻 Lead Fullstack Dev, 🛡️ QA & Security Engineer) is ready and standing by on idle. No actions will be taken until you provide a prompt.",
+      action: "System Idle. Type your idea below or click a preset to launch the team.",
+      comp: "standby",
+      stage: 1
     }
   ]);
 
@@ -215,14 +113,21 @@ export default function App() {
   });
 
   const logEndRef = useRef<HTMLDivElement>(null);
+  const logsRef = useRef<LogItem[]>(logs);
+
+  useEffect(() => {
+    logsRef.current = logs;
+  }, [logs]);
 
   // Executes one progressive collaboration turn
   const executeStep = async (taskToRun: string, currentLogs: LogItem[]) => {
+    if (!taskToRun || !taskToRun.trim()) return;
+
     try {
       const response = await fetch('/api/collaborate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ task: taskToRun, history: currentLogs }),
+        body: JSON.stringify({ task: taskToRun.trim(), history: currentLogs }),
       });
 
       if (!response.ok) {
@@ -268,15 +173,34 @@ export default function App() {
         };
 
         setLogs(prev => [...prev, newLog].slice(-30));
+
+        // When Stage 6 is reached, STOP streaming and complete build!
+        if (nextStage >= 6) {
+          setIsStreaming(false);
+          setTimeout(() => {
+            setLogs(prev => [
+              ...prev,
+              {
+                id: Date.now() + 10,
+                timestamp: new Date().toLocaleTimeString(),
+                persona: "🤖 Multi-Agent Orchestrator",
+                thought: `All 6 construction phases for "${taskToRun}" are complete. The application has been verified for security and accessibility and is fully active in the live preview.`,
+                action: "Build Complete (Paused). Ready for your next prompt, refinement, or feature request.",
+                comp: "full_site",
+                stage: 6
+              }
+            ].slice(-30));
+          }, 600);
+        }
       }
     } catch (err) {
       console.error("Collaborator error:", err);
     }
   };
 
-  // Streaming Loop: 4.5s cadence keeps user engaged without waiting 14 seconds!
+  // Streaming Loop: runs only when actively started, streaming, and prompt exists
   useEffect(() => {
-    if (!isStreaming || !activeTask) return;
+    if (!hasStarted || !isStreaming || !activeTask.trim()) return;
     setCountdown(4);
 
     const countdownTimer = setInterval(() => {
@@ -284,14 +208,14 @@ export default function App() {
     }, 1000);
 
     const stepTimer = setInterval(() => {
-      executeStep(activeTask, logs);
+      executeStep(activeTask, logsRef.current);
     }, 4500);
 
     return () => {
       clearInterval(countdownTimer);
       clearInterval(stepTimer);
     };
-  }, [isStreaming, activeTask, logs.length]);
+  }, [hasStarted, isStreaming, activeTask]);
 
   useEffect(() => {
     logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -307,19 +231,22 @@ export default function App() {
   };
 
   const startNewProject = (task: string) => {
+    if (!task || !task.trim()) return;
+    const cleanTask = task.trim();
+
     setHasStarted(true);
     setIsStreaming(true);
-    setActiveTask(task);
+    setActiveTask(cleanTask);
     setCurrentBuildStage(1);
     
-    const newDomainData = generateDomainData(task);
+    const newDomainData = synthesizeDomainWebsite(cleanTask);
     setWebsite(newDomainData);
     setActiveWebsiteTab("All");
     setWebsiteFilter("");
 
     setActiveModification({
       persona: "🎨 UI/UX Architect",
-      action: `Stage 1: Architecting foundational blueprint for "${task}"`,
+      action: `Stage 1: Architecting foundational blueprint for "${cleanTask}"`,
       section: "blueprint"
     });
 
@@ -327,14 +254,44 @@ export default function App() {
       id: Date.now(),
       timestamp: new Date().toLocaleTimeString(),
       persona: "👤 Product Lead (User)",
-      thought: `Directive broadcasted: Build comprehensive, production-grade application for "${task}".`,
-      action: `Launched project: ${task}`,
+      thought: `Directive broadcasted: Build comprehensive, production-grade application for "${cleanTask}".`,
+      action: `Launched project: ${cleanTask}`,
       comp: "blueprint",
       stage: 1
     };
 
     setLogs([userLog]);
-    executeStep(task, [userLog]);
+    executeStep(cleanTask, [userLog]);
+  };
+
+  const handleReset = () => {
+    setHasStarted(false);
+    setIsStreaming(false);
+    setActiveTask("");
+    setCurrentBuildStage(1);
+    setWebsite(synthesizeDomainWebsite("Modern SaaS Operations Platform"));
+    setActiveModification({
+      persona: "🤖 Orchestrator",
+      action: "Agents on Standby: Waiting for user prompt",
+      section: "standby"
+    });
+    setLogs([
+      {
+        id: 1,
+        timestamp: new Date().toLocaleTimeString(),
+        persona: "🤖 Multi-Agent Orchestrator",
+        thought: "The engineering team (🎨 UI/UX Architect, 💻 Lead Fullstack Dev, 🛡️ QA & Security Engineer) is ready and standing by on idle. No actions will be taken until you provide a prompt.",
+        action: "System Idle. Type your idea below or click a preset to launch the team.",
+        comp: "standby",
+        stage: 1
+      }
+    ]);
+    setQaTestResults({
+      xss: 'idle',
+      contrast: 'idle',
+      viewport: 'idle',
+      sanitizeLog: []
+    });
   };
 
   const triggerToast = (msg: string) => {
@@ -425,30 +382,45 @@ export default function App() {
         {/* Streaming & Cycle Controls */}
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setIsStreaming(!isStreaming)}
+            onClick={() => {
+              if (!hasStarted) return;
+              setIsStreaming(!isStreaming);
+            }}
+            disabled={!hasStarted}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-              isStreaming 
-                ? 'bg-amber-950/40 text-amber-300 border-amber-700/60 hover:bg-amber-900/40' 
-                : 'bg-emerald-950/40 text-emerald-300 border-emerald-700/60 hover:bg-emerald-900/40'
+              !hasStarted
+                ? 'bg-slate-900 text-slate-500 border-slate-800 cursor-not-allowed opacity-60'
+                : isStreaming 
+                  ? 'bg-amber-950/40 text-amber-300 border-amber-700/60 hover:bg-amber-900/40' 
+                  : 'bg-emerald-950/40 text-emerald-300 border-emerald-700/60 hover:bg-emerald-900/40'
             }`}
+            title={!hasStarted ? "Submit a prompt below to launch autonomous building" : isStreaming ? "Pause auto-building" : "Resume auto-building"}
           >
-            {isStreaming ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-            <span>{isStreaming ? `Building (${countdown}s)` : 'Resume Stream'}</span>
+            {!hasStarted ? <Sparkles className="w-3.5 h-3.5" /> : isStreaming ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+            <span>{!hasStarted ? 'Standby (Enter Prompt)' : isStreaming ? `Building (${countdown}s)` : 'Resume Stream'}</span>
           </button>
 
           <button
-            onClick={() => executeStep(activeTask, logs)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 border border-cyan-400 shadow-md shadow-cyan-500/20 active:scale-95 transition-all"
-            title="Advance to Next Build Stage"
+            onClick={() => {
+              if (!hasStarted) return;
+              executeStep(activeTask, logsRef.current);
+            }}
+            disabled={!hasStarted}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border shadow-md transition-all ${
+              !hasStarted
+                ? 'bg-slate-900 text-slate-500 border-slate-800 cursor-not-allowed opacity-60'
+                : 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 border-cyan-400 shadow-cyan-500/20 active:scale-95'
+            }`}
+            title={!hasStarted ? "Awaiting prompt" : "Advance to Next Build Stage"}
           >
             <SkipForward className="w-3.5 h-3.5" />
             <span>Next Step ➔</span>
           </button>
 
           <button
-            onClick={() => startNewProject(activeTask)}
+            onClick={handleReset}
             className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-slate-800 transition-all"
-            title="Rebuild Project From Stage 1"
+            title="Reset DevStudio to Idle Standby"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
@@ -461,7 +433,7 @@ export default function App() {
           <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
           <span className="text-slate-400 shrink-0">Active Project:</span>
           <span className="font-semibold text-white bg-slate-800/70 px-2.5 py-0.5 rounded border border-slate-700/50 truncate">
-            {activeTask}
+            {hasStarted && activeTask ? activeTask : "Standby — Type a prompt below or pick a preset"}
           </span>
         </div>
 
@@ -577,8 +549,8 @@ export default function App() {
               </h3>
               <div className="space-y-1.5 text-xs">
                 {BUILD_STAGES.map((s) => {
-                  const isDone = s.id < currentBuildStage;
-                  const isCurrent = s.id === currentBuildStage;
+                  const isDone = hasStarted && s.id < currentBuildStage;
+                  const isCurrent = hasStarted && s.id === currentBuildStage;
                   return (
                     <div 
                       key={s.id} 
@@ -595,7 +567,7 @@ export default function App() {
                         <span>{s.name}</span>
                       </div>
                       <span className="text-[10px] font-mono">
-                        {isDone ? '✓ DONE' : isCurrent ? 'BUILDING...' : 'PENDING'}
+                        {isDone ? '✓ DONE' : isCurrent ? 'BUILDING...' : hasStarted ? 'PENDING' : 'IDLE'}
                       </span>
                     </div>
                   );
@@ -787,8 +759,8 @@ export default function App() {
               <span className="text-slate-400 text-[11px] font-mono shrink-0">BUILD PROGRESS:</span>
               <div className="flex items-center gap-1.5">
                 {BUILD_STAGES.map((s) => {
-                  const isDone = s.id < website.stage;
-                  const isCurrent = s.id === website.stage;
+                  const isDone = hasStarted && s.id < website.stage;
+                  const isCurrent = hasStarted && s.id === website.stage;
                   return (
                     <div 
                       key={s.id} 
@@ -809,7 +781,7 @@ export default function App() {
             </div>
 
             <span className="text-[11px] text-cyan-300 font-mono hidden md:inline">
-              Active: {activeModification.persona}
+              Active: {hasStarted ? activeModification.persona : "Agents on Standby"}
             </span>
           </div>
 
@@ -842,68 +814,139 @@ export default function App() {
                       <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
                     </div>
                     <div className="bg-slate-900/90 px-3 py-0.5 rounded border border-slate-800 text-slate-400 truncate max-w-[240px]">
-                      https://preview.app/{website.title.toLowerCase().replace(/[^a-z0-9]/g, '')}
+                      {hasStarted && activeTask ? `https://preview.app/${website.title.toLowerCase().replace(/[^a-z0-9]/g, '')}` : 'https://preview.app/standby'}
                     </div>
                     <span className="text-emerald-400 text-[10px] flex items-center gap-1 font-mono">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      Stage {website.stage}/6
+                      {hasStarted ? `Stage ${website.stage}/6` : 'Standby (Idle)'}
                     </span>
                   </div>
 
                   {/* PROGRESSIVELY ASSEMBLED WEBSITE CANVAS */}
                   <div className="p-4 space-y-6 text-slate-100 min-h-[520px]">
 
-                    {/* STAGE 1: Blueprint & Design Tokens View (Visible at Stage 1) */}
-                    {website.stage === 1 && (
-                      <div className="space-y-4 p-6 border-2 border-dashed border-violet-500/50 bg-violet-950/10 rounded-xl animate-pulse">
-                        <div className="flex items-center justify-between border-b border-violet-800/40 pb-3">
-                          <div className="flex items-center gap-2">
-                            <Palette className="w-4 h-4 text-violet-400" />
-                            <span className="font-bold text-sm text-white">{website.title} [Blueprint Stage]</span>
+                    {/* STANDBY STATE: Awaiting user prompt */}
+                    {!hasStarted ? (
+                      <div className="py-8 px-4 text-center space-y-6">
+                        <div className="max-w-md mx-auto space-y-3">
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-indigo-600/20 border border-cyan-500/40 flex items-center justify-center mx-auto text-cyan-400 shadow-lg shadow-cyan-500/10">
+                            <Sparkles className="w-6 h-6 animate-pulse" />
                           </div>
-                          <span className="text-[10px] font-mono text-violet-300 bg-violet-900/40 px-2 py-0.5 rounded border border-violet-700/50">
-                            🎨 Architect Establishing Tokens
-                          </span>
+                          <h3 className="text-lg font-bold text-white tracking-tight">AI Engineering Team on Standby</h3>
+                          <p className="text-xs text-slate-400 leading-relaxed">
+                            The UI/UX Architect, Lead Fullstack Dev, and QA & Security Engineer are idle and awaiting your command. Select a starter blueprint or enter a prompt in the box below to launch the live autonomous collaboration.
+                          </p>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-3 text-xs">
-                          <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-lg space-y-1">
-                            <span className="text-slate-400 text-[11px]">Primary Canvas:</span>
-                            <div className="h-6 rounded bg-[#0B0F17] border border-slate-700 flex items-center justify-center font-mono text-[10px] text-slate-300">
-                              #0B0F17 (60%)
-                            </div>
+                        {/* Quick-Launch Preset Grid */}
+                        <div className="text-left space-y-2.5 max-w-lg mx-auto">
+                          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-500 text-center">
+                            Select a Blueprint to Launch Autonomous Build
                           </div>
-                          <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-lg space-y-1">
-                            <span className="text-slate-400 text-[11px]">Surface Layer:</span>
-                            <div className="h-6 rounded bg-[#111827] border border-slate-700 flex items-center justify-center font-mono text-[10px] text-slate-300">
-                              #111827 (30%)
-                            </div>
-                          </div>
-                          <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-lg space-y-1">
-                            <span className="text-slate-400 text-[11px]">Accent Highlight:</span>
-                            <div className="h-6 rounded bg-emerald-500 text-slate-950 font-bold flex items-center justify-center font-mono text-[10px]">
-                              #10B981 (10%)
-                            </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <button
+                              onClick={() => startNewProject("Artisan Cold Brew Coffee Subscription")}
+                              className="p-3.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800/90 hover:border-amber-700/60 text-left transition-all group active:scale-95 cursor-pointer"
+                            >
+                              <div className="flex items-center gap-2 font-semibold text-xs text-white group-hover:text-amber-300">
+                                <span>☕</span>
+                                <span>Coffee E-Commerce</span>
+                              </div>
+                              <p className="text-[11px] text-slate-400 mt-1">Single-origin subscriptions, roast catalog, tasting notes</p>
+                            </button>
+
+                            <button
+                              onClick={() => startNewProject("Cyber Incident Response Matrix")}
+                              className="p-3.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800/90 hover:border-cyan-700/60 text-left transition-all group active:scale-95 cursor-pointer"
+                            >
+                              <div className="flex items-center gap-2 font-semibold text-xs text-white group-hover:text-cyan-300">
+                                <span>🛡️</span>
+                                <span>Cyber Threat Matrix</span>
+                              </div>
+                              <p className="text-[11px] text-slate-400 mt-1">Real-time threat feeds, firewall telemetry, and intrusion alerts</p>
+                            </button>
+
+                            <button
+                              onClick={() => startNewProject("Decentralized Crypto Asset Terminal")}
+                              className="p-3.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800/90 hover:border-emerald-700/60 text-left transition-all group active:scale-95 cursor-pointer"
+                            >
+                              <div className="flex items-center gap-2 font-semibold text-xs text-white group-hover:text-emerald-300">
+                                <span>📈</span>
+                                <span>Crypto DEX Terminal</span>
+                              </div>
+                              <p className="text-[11px] text-slate-400 mt-1">Order books, wallet integration, and liquidity yield vaults</p>
+                            </button>
+
+                            <button
+                              onClick={() => startNewProject("Modern SaaS Cloud Operations Platform")}
+                              className="p-3.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800/90 hover:border-indigo-700/60 text-left transition-all group active:scale-95 cursor-pointer"
+                            >
+                              <div className="flex items-center gap-2 font-semibold text-xs text-white group-hover:text-indigo-300">
+                                <span>⚡</span>
+                                <span>Cloud SaaS Platform</span>
+                              </div>
+                              <p className="text-[11px] text-slate-400 mt-1">Cluster telemetry, latency analytics, and health status</p>
+                            </button>
                           </div>
                         </div>
 
-                        <div className="p-4 bg-slate-900/60 rounded-lg border border-slate-800 space-y-2">
-                          <div className="text-xs text-slate-400 font-mono">Structural Wireframe Skeleton:</div>
-                          <div className="h-4 bg-slate-800/80 rounded w-1/3 animate-pulse" />
-                          <div className="h-8 bg-slate-800/50 rounded w-full animate-pulse" />
-                          <div className="h-4 bg-slate-800/60 rounded w-2/3 animate-pulse" />
-                        </div>
-
-                        <div className="text-center pt-2">
-                          <button 
-                            onClick={() => executeStep(activeTask, logs)}
-                            className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-lg shadow-md transition-all active:scale-95"
-                          >
-                            Advance to Stage 2: Hero & Nav ➔
-                          </button>
+                        <div className="pt-2 text-[11px] text-slate-500 font-mono">
+                          Or type any project idea in the prompt bar at bottom left and click <span className="text-cyan-400 font-semibold">Build</span>
                         </div>
                       </div>
-                    )}
+                    ) : (
+                      <>
+                        {/* STAGE 1: Blueprint & Design Tokens View (Visible at Stage 1) */}
+                        {website.stage === 1 && (
+                          <div className="space-y-4 p-6 border-2 border-dashed border-violet-500/50 bg-violet-950/10 rounded-xl animate-pulse">
+                            <div className="flex items-center justify-between border-b border-violet-800/40 pb-3">
+                              <div className="flex items-center gap-2">
+                                <Palette className="w-4 h-4 text-violet-400" />
+                                <span className="font-bold text-sm text-white">{website.title} [Blueprint Stage]</span>
+                              </div>
+                              <span className="text-[10px] font-mono text-violet-300 bg-violet-900/40 px-2 py-0.5 rounded border border-violet-700/50">
+                                🎨 Architect Establishing Tokens
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-3 text-xs">
+                              <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-lg space-y-1">
+                                <span className="text-slate-400 text-[11px]">Primary Canvas:</span>
+                                <div className="h-6 rounded bg-[#0B0F17] border border-slate-700 flex items-center justify-center font-mono text-[10px] text-slate-300">
+                                  #0B0F17 (60%)
+                                </div>
+                              </div>
+                              <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-lg space-y-1">
+                                <span className="text-slate-400 text-[11px]">Surface Layer:</span>
+                                <div className="h-6 rounded bg-[#111827] border border-slate-700 flex items-center justify-center font-mono text-[10px] text-slate-300">
+                                  #111827 (30%)
+                                </div>
+                              </div>
+                              <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-lg space-y-1">
+                                <span className="text-slate-400 text-[11px]">Accent Highlight:</span>
+                                <div className="h-6 rounded bg-emerald-500 text-slate-950 font-bold flex items-center justify-center font-mono text-[10px]">
+                                  #10B981 (10%)
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="p-4 bg-slate-900/60 rounded-lg border border-slate-800 space-y-2">
+                              <div className="text-xs text-slate-400 font-mono">Structural Wireframe Skeleton:</div>
+                              <div className="h-4 bg-slate-800/80 rounded w-1/3 animate-pulse" />
+                              <div className="h-8 bg-slate-800/50 rounded w-full animate-pulse" />
+                              <div className="h-4 bg-slate-800/60 rounded w-2/3 animate-pulse" />
+                            </div>
+
+                            <div className="text-center pt-2">
+                              <button 
+                                onClick={() => executeStep(activeTask, logsRef.current)}
+                                className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-lg shadow-md transition-all active:scale-95"
+                              >
+                                Advance to Stage 2: Hero & Nav ➔
+                              </button>
+                            </div>
+                          </div>
+                        )}
 
                     {/* STAGES 2+: Website Navbar */}
                     {website.stage >= 2 && (
@@ -1134,6 +1177,22 @@ export default function App() {
                         <span className="font-mono text-[11px] text-cyan-400/80">WCAG 2.1 AA Compliant · Zero-Pill Architecture</span>
                       </footer>
                     )}
+
+                    {/* STAGE 6: Production Live Badge & Release Stamp */}
+                    {website.stage >= 6 && (
+                      <div className="p-3 bg-gradient-to-r from-emerald-950/60 via-slate-900/60 to-cyan-950/60 border border-emerald-500/50 rounded-xl flex items-center justify-between text-xs animate-in fade-in duration-500">
+                        <div className="flex items-center gap-2 text-emerald-400">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                          <span className="font-semibold text-white">Production Build 1.0 Live</span>
+                          <span className="text-slate-400 text-[11px] hidden sm:inline">— All 3 agents approved & verified</span>
+                        </div>
+                        <span className="text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded">
+                          ● OPERATIONAL
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
 
                   </div>
                 </div>
