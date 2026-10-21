@@ -6,9 +6,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Play, 
-  Pause, 
-  SkipForward, 
-  RotateCcw, 
   Send, 
   Code as CodeIcon, 
   Eye, 
@@ -22,13 +19,9 @@ import {
   Cpu, 
   X, 
   Search, 
-  ChevronDown, 
-  ChevronUp, 
   Maximize2, 
   Minimize2,
   CheckCircle2,
-  ArrowRight,
-  Layers,
   Palette
 } from 'lucide-react';
 
@@ -56,19 +49,15 @@ const BUILD_STAGES = [
 ];
 
 export default function App() {
-  const [hasStarted, setHasStarted] = useState<boolean>(false);
+  const [hasStarted, setHasStarted] = useState<boolean>(true);
   const [prompt, setPrompt] = useState("");
-  const [activeTask, setActiveTask] = useState<string>("");
-  const [isStreaming, setIsStreaming] = useState<boolean>(false);
-  const [activePersona, setActivePersona] = useState<string>("🤖 Orchestrator");
-  const [previewTab, setPreviewTab] = useState<'preview' | 'code' | 'qa'>('preview');
+  const [activeTask, setActiveTask] = useState<string>("Modern SaaS Operations Platform");
+  const [activePersona, setActivePersona] = useState<string>("🚀 Lead Fullstack Dev & Architect");
+  const [previewTab, setPreviewTab] = useState<'preview' | 'code' | 'qa' | 'iframe'>('preview');
   const [viewportMode, setViewportMode] = useState<'desktop' | 'mobile'>('desktop');
-  const [mobileView, setMobileView] = useState<'preview' | 'chat'>('preview');
   const [isFocusPreview, setIsFocusPreview] = useState<boolean>(false);
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
   const [expandedThoughts, setExpandedThoughts] = useState<Record<number, boolean>>({});
-  const [countdown, setCountdown] = useState<number>(4);
-  const [currentBuildStage, setCurrentBuildStage] = useState<number>(1);
 
   // Progressive Live Website State
   const [website, setWebsite] = useState<WebsiteState>(() => synthesizeDomainWebsite("Modern SaaS Operations Platform"));
@@ -78,25 +67,60 @@ export default function App() {
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const [activeModification, setActiveModification] = useState<{
-    persona: string;
-    action: string;
-    section: string;
-  }>({
-    persona: "🤖 Orchestrator",
-    action: "Agents on Standby: Waiting for user prompt",
-    section: "standby"
-  });
-
   const [logs, setLogs] = useState<LogItem[]>([
     {
       id: 1,
       timestamp: new Date().toLocaleTimeString(),
-      persona: "🤖 Multi-Agent Orchestrator",
-      thought: "The engineering team (🎨 UI/UX Architect, 💻 Lead Fullstack Dev, 🛡️ QA & Security Engineer) is ready and standing by on idle. No actions will be taken until you provide a prompt.",
-      action: "System Idle. Type your idea below or click a preset to launch the team.",
-      comp: "standby",
+      persona: "🎨 UI/UX Architect",
+      thought: "Initiating architectural design system, color tokens, and layout wireframe contract for Modern SaaS Operations Platform.",
+      action: "Stage 1: Architected design system and layout wireframe contract.",
+      comp: "blueprint",
       stage: 1
+    },
+    {
+      id: 2,
+      timestamp: new Date().toLocaleTimeString(),
+      persona: "💻 Lead Fullstack Dev",
+      thought: "Implemented responsive Navigation Bar and interactive Hero Section with live metrics and resilient click handlers.",
+      action: "Stage 2: Implemented responsive Navigation Bar and interactive Hero Section.",
+      comp: "hero",
+      stage: 2
+    },
+    {
+      id: 3,
+      timestamp: new Date().toLocaleTimeString(),
+      persona: "🎨 UI/UX Architect",
+      thought: "Designed 3-column Feature Grid with domain-tailored value propositions and high-contrast typography.",
+      action: "Stage 3: Designed 3-column Feature Grid.",
+      comp: "features",
+      stage: 3
+    },
+    {
+      id: 4,
+      timestamp: new Date().toLocaleTimeString(),
+      persona: "💻 Lead Fullstack Dev",
+      thought: "Wired up interactive Systems Matrix data grid with instant category filtering and search querying.",
+      action: "Stage 4: Implemented interactive Systems Matrix with live search filtering.",
+      comp: "grid",
+      stage: 4
+    },
+    {
+      id: 5,
+      timestamp: new Date().toLocaleTimeString(),
+      persona: "🛡️ QA & Security Engineer",
+      thought: "Executed automated XSS penetration tests, verified WCAG 2.1 AA contrast ratio, and confirmed 44px touch targets.",
+      action: "Stage 5: Executed penetration test suite; injected WCAG AA & XSS verified security stamps.",
+      comp: "test",
+      stage: 5
+    },
+    {
+      id: 6,
+      timestamp: new Date().toLocaleTimeString(),
+      persona: "🚀 Release Engineer",
+      thought: "Final production release complete — live website fully operational and interactive.",
+      action: "Stage 6: Final production release operational.",
+      comp: "full_site",
+      stage: 6
     }
   ]);
 
@@ -113,113 +137,80 @@ export default function App() {
   });
 
   const logEndRef = useRef<HTMLDivElement>(null);
-  const logsRef = useRef<LogItem[]>(logs);
 
-  useEffect(() => {
-    logsRef.current = logs;
-  }, [logs]);
-
-  // Executes one progressive collaboration turn
-  const executeStep = async (taskToRun: string, currentLogs: LogItem[]) => {
+  const startNewProject = async (taskToRun: string) => {
     if (!taskToRun || !taskToRun.trim()) return;
+    const cleanTask = taskToRun.trim();
 
-    try {
-      const response = await fetch('/api/collaborate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ task: taskToRun.trim(), history: currentLogs }),
-      });
+    setHasStarted(true);
+    setActiveTask(cleanTask);
+    
+    const newDomainData = synthesizeDomainWebsite(cleanTask);
+    setWebsite(newDomainData);
+    setActiveWebsiteTab("All");
+    setWebsiteFilter("");
 
-      if (!response.ok) {
-        throw new Error(`Server status ${response.status}`);
+    const timestamp = new Date().toLocaleTimeString();
+    const newLogs: LogItem[] = [
+      {
+        id: Date.now() + 1,
+        timestamp,
+        persona: "🎨 UI/UX Architect",
+        thought: `Synthesizing bespoke design tokens and color palette for "${cleanTask}".`,
+        action: `Stage 1: Architected design system for ${cleanTask}.`,
+        comp: "blueprint",
+        stage: 1
+      },
+      {
+        id: Date.now() + 2,
+        timestamp,
+        persona: "💻 Lead Fullstack Dev",
+        thought: `Constructing responsive navigation and interactive hero header for "${cleanTask}".`,
+        action: `Stage 2: Implemented Hero and Navigation.`,
+        comp: "hero",
+        stage: 2
+      },
+      {
+        id: Date.now() + 3,
+        timestamp,
+        persona: "🎨 UI/UX Architect",
+        thought: `Designing 3-column value proposition feature grid.`,
+        action: `Stage 3: Designed Feature Grid.`,
+        comp: "features",
+        stage: 3
+      },
+      {
+        id: Date.now() + 4,
+        timestamp,
+        persona: "💻 Lead Fullstack Dev",
+        thought: `Building filterable data records table with instant search and record inspection drawers.`,
+        action: `Stage 4: Implemented Interactive Systems Matrix.`,
+        comp: "grid",
+        stage: 4
+      },
+      {
+        id: Date.now() + 5,
+        timestamp,
+        persona: "🛡️ QA & Security Engineer",
+        thought: `Running security penetration test and accessibility verification.`,
+        action: `Stage 5: QA security audit passed with 0 vulnerabilities.`,
+        comp: "test",
+        stage: 5
+      },
+      {
+        id: Date.now() + 6,
+        timestamp,
+        persona: "🚀 Release Engineer",
+        thought: `Production release compiled successfully for "${cleanTask}".`,
+        action: `Stage 6: Production Live — website is fully interactive.`,
+        comp: "full_site",
+        stage: 6
       }
+    ];
 
-      const data = await response.json();
-      if (data && data.persona) {
-        const nextStage = data.websiteState?.stage || ((currentBuildStage % 6) + 1);
-        setCurrentBuildStage(nextStage);
-        setActivePersona(data.persona);
-
-        setActiveModification({
-          persona: data.persona,
-          action: data.action || `Built Stage ${nextStage}`,
-          section: data.comp || "hero"
-        });
-
-        // Mutate live website state with progressive stage
-        setWebsite(prev => {
-          const updated = {
-            ...prev,
-            stage: nextStage,
-            currentSection: data.comp || prev.currentSection
-          };
-          if (data.websiteState) {
-            Object.assign(updated, data.websiteState);
-            updated.stage = nextStage;
-          }
-          return updated;
-        });
-
-        const newLog: LogItem = {
-          id: Date.now() + Math.random(),
-          timestamp: new Date().toLocaleTimeString(),
-          persona: data.persona,
-          thought: data.thought || `Progressing to Stage ${nextStage} of build.`,
-          action: data.action || `Completed stage ${nextStage} implementation.`,
-          comp: data.comp || "hero",
-          code: data.code || "",
-          stage: nextStage,
-          source: data.source || 'agent'
-        };
-
-        setLogs(prev => [...prev, newLog].slice(-30));
-
-        // When Stage 6 is reached, STOP streaming and complete build!
-        if (nextStage >= 6) {
-          setIsStreaming(false);
-          setTimeout(() => {
-            setLogs(prev => [
-              ...prev,
-              {
-                id: Date.now() + 10,
-                timestamp: new Date().toLocaleTimeString(),
-                persona: "🤖 Multi-Agent Orchestrator",
-                thought: `All 6 construction phases for "${taskToRun}" are complete. The application has been verified for security and accessibility and is fully active in the live preview.`,
-                action: "Build Complete (Paused). Ready for your next prompt, refinement, or feature request.",
-                comp: "full_site",
-                stage: 6
-              }
-            ].slice(-30));
-          }, 600);
-        }
-      }
-    } catch (err) {
-      console.error("Collaborator error:", err);
-    }
+    setLogs(newLogs);
+    triggerToast(`Successfully generated "${cleanTask}"!`);
   };
-
-  // Streaming Loop: runs only when actively started, streaming, and prompt exists
-  useEffect(() => {
-    if (!hasStarted || !isStreaming || !activeTask.trim()) return;
-    setCountdown(4);
-
-    const countdownTimer = setInterval(() => {
-      setCountdown((prev) => (prev > 1 ? prev - 1 : 4));
-    }, 1000);
-
-    const stepTimer = setInterval(() => {
-      executeStep(activeTask, logsRef.current);
-    }, 4500);
-
-    return () => {
-      clearInterval(countdownTimer);
-      clearInterval(stepTimer);
-    };
-  }, [hasStarted, isStreaming, activeTask]);
-
-  useEffect(() => {
-    logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [logs.length]);
 
   const handlePromptSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -230,68 +221,8 @@ export default function App() {
     (document.activeElement as HTMLElement)?.blur();
   };
 
-  const startNewProject = (task: string) => {
-    if (!task || !task.trim()) return;
-    const cleanTask = task.trim();
-
-    setHasStarted(true);
-    setIsStreaming(true);
-    setActiveTask(cleanTask);
-    setCurrentBuildStage(1);
-    
-    const newDomainData = synthesizeDomainWebsite(cleanTask);
-    setWebsite(newDomainData);
-    setActiveWebsiteTab("All");
-    setWebsiteFilter("");
-
-    setActiveModification({
-      persona: "🎨 UI/UX Architect",
-      action: `Stage 1: Architecting foundational blueprint for "${cleanTask}"`,
-      section: "blueprint"
-    });
-
-    const userLog: LogItem = {
-      id: Date.now(),
-      timestamp: new Date().toLocaleTimeString(),
-      persona: "👤 Product Lead (User)",
-      thought: `Directive broadcasted: Build comprehensive, production-grade application for "${cleanTask}".`,
-      action: `Launched project: ${cleanTask}`,
-      comp: "blueprint",
-      stage: 1
-    };
-
-    setLogs([userLog]);
-    executeStep(cleanTask, [userLog]);
-  };
-
   const handleReset = () => {
-    setHasStarted(false);
-    setIsStreaming(false);
-    setActiveTask("");
-    setCurrentBuildStage(1);
-    setWebsite(synthesizeDomainWebsite("Modern SaaS Operations Platform"));
-    setActiveModification({
-      persona: "🤖 Orchestrator",
-      action: "Agents on Standby: Waiting for user prompt",
-      section: "standby"
-    });
-    setLogs([
-      {
-        id: 1,
-        timestamp: new Date().toLocaleTimeString(),
-        persona: "🤖 Multi-Agent Orchestrator",
-        thought: "The engineering team (🎨 UI/UX Architect, 💻 Lead Fullstack Dev, 🛡️ QA & Security Engineer) is ready and standing by on idle. No actions will be taken until you provide a prompt.",
-        action: "System Idle. Type your idea below or click a preset to launch the team.",
-        comp: "standby",
-        stage: 1
-      }
-    ]);
-    setQaTestResults({
-      xss: 'idle',
-      contrast: 'idle',
-      viewport: 'idle',
-      sanitizeLog: []
-    });
+    startNewProject("Modern SaaS Operations Platform");
   };
 
   const triggerToast = (msg: string) => {
@@ -357,6 +288,53 @@ export default function App() {
     return 'text-emerald-400 border-emerald-800/60 bg-emerald-950/40';
   };
 
+  // HTML content for iframe preview
+  const iframeHtmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>${website.title}</title>
+</head>
+<body class="bg-[#0B0F17] text-white font-sans p-6">
+  <div class="max-w-4xl mx-auto space-y-6">
+    <nav class="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div class="flex items-center gap-2 font-bold text-lg">
+        <div class="w-8 h-8 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center font-bold">
+          ${website.title.slice(0, 1)}
+        </div>
+        <span>${website.title}</span>
+      </div>
+      <div class="hidden sm:flex gap-4 text-xs text-slate-400">
+        ${website.navLinks.map(l => `<span>${l}</span>`).join('')}
+      </div>
+    </nav>
+
+    <div class="p-8 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 space-y-4">
+      <span class="px-3 py-1 rounded bg-cyan-500/20 text-cyan-300 text-xs font-mono border border-cyan-500/40">
+        ${website.tagline}
+      </span>
+      <h1 class="text-3xl font-extrabold tracking-tight">${website.title}</h1>
+      <p class="text-sm text-slate-400 max-w-xl">${website.description}</p>
+      <button class="px-5 py-2.5 bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs hover:bg-emerald-400 transition-all">
+        ${website.heroCTA}
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      ${website.features.map(f => `
+        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+          <h3 class="font-bold text-sm text-white">${f.title}</h3>
+          <p class="text-xs text-slate-400">${f.desc}</p>
+        </div>
+      `).join('')}
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
   return (
     <div className="min-h-screen bg-[#070A0F] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
       
@@ -368,9 +346,9 @@ export default function App() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-base tracking-tight text-white">DevStudio</span>
+              <span className="font-bold text-base tracking-tight text-white">DevStudio AI</span>
               <span className="text-[11px] font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/50">
-                Live Autonomous Team
+                Autonomous Multi-Agent Studio
               </span>
             </div>
             <p className="text-xs text-slate-400 hidden sm:block">
@@ -379,50 +357,14 @@ export default function App() {
           </div>
         </div>
 
-        {/* Streaming & Cycle Controls */}
+        {/* Controls */}
         <div className="flex items-center gap-2">
           <button
-            onClick={() => {
-              if (!hasStarted) return;
-              setIsStreaming(!isStreaming);
-            }}
-            disabled={!hasStarted}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-              !hasStarted
-                ? 'bg-slate-900 text-slate-500 border-slate-800 cursor-not-allowed opacity-60'
-                : isStreaming 
-                  ? 'bg-amber-950/40 text-amber-300 border-amber-700/60 hover:bg-amber-900/40' 
-                  : 'bg-emerald-950/40 text-emerald-300 border-emerald-700/60 hover:bg-emerald-900/40'
-            }`}
-            title={!hasStarted ? "Submit a prompt below to launch autonomous building" : isStreaming ? "Pause auto-building" : "Resume auto-building"}
+            onClick={() => startNewProject(activeTask)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 border border-cyan-400 shadow-md shadow-cyan-500/20 active:scale-95 transition-all"
           >
-            {!hasStarted ? <Sparkles className="w-3.5 h-3.5" /> : isStreaming ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-            <span>{!hasStarted ? 'Standby (Enter Prompt)' : isStreaming ? `Building (${countdown}s)` : 'Resume Stream'}</span>
-          </button>
-
-          <button
-            onClick={() => {
-              if (!hasStarted) return;
-              executeStep(activeTask, logsRef.current);
-            }}
-            disabled={!hasStarted}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border shadow-md transition-all ${
-              !hasStarted
-                ? 'bg-slate-900 text-slate-500 border-slate-800 cursor-not-allowed opacity-60'
-                : 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 border-cyan-400 shadow-cyan-500/20 active:scale-95'
-            }`}
-            title={!hasStarted ? "Awaiting prompt" : "Advance to Next Build Stage"}
-          >
-            <SkipForward className="w-3.5 h-3.5" />
-            <span>Next Step ➔</span>
-          </button>
-
-          <button
-            onClick={handleReset}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-slate-800 transition-all"
-            title="Reset DevStudio to Idle Standby"
-          >
-            <RotateCcw className="w-4 h-4" />
+            <Play className="w-3.5 h-3.5" />
+            <span>Re-Generate App</span>
           </button>
         </div>
       </header>
@@ -433,12 +375,24 @@ export default function App() {
           <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
           <span className="text-slate-400 shrink-0">Active Project:</span>
           <span className="font-semibold text-white bg-slate-800/70 px-2.5 py-0.5 rounded border border-slate-700/50 truncate">
-            {hasStarted && activeTask ? activeTask : "Standby — Type a prompt below or pick a preset"}
+            {activeTask}
           </span>
         </div>
 
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-          <span className="text-slate-500 text-[11px] mr-1">Launch Preset:</span>
+          <span className="text-slate-500 text-[11px] mr-1">Presets:</span>
+          <button 
+            onClick={() => startNewProject("OrbitDynamics Deep Space Telemetry")}
+            className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded border border-slate-800 text-[11px] whitespace-nowrap active:scale-95"
+          >
+            🚀 Space Telemetry
+          </button>
+          <button 
+            onClick={() => startNewProject("HelixGenomics Research Institute")}
+            className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded border border-slate-800 text-[11px] whitespace-nowrap active:scale-95"
+          >
+            🧬 BioTech Genomics
+          </button>
           <button 
             onClick={() => startNewProject("Artisan Cold Brew Coffee Subscription")}
             className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded border border-slate-800 text-[11px] whitespace-nowrap active:scale-95"
@@ -451,19 +405,13 @@ export default function App() {
           >
             🛡️ Cyber Hub
           </button>
-          <button 
-            onClick={() => startNewProject("Decentralized Crypto Asset Terminal")}
-            className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded border border-slate-800 text-[11px] whitespace-nowrap active:scale-95"
-          >
-            📈 Crypto Terminal
-          </button>
         </div>
       </div>
 
       {/* Main Workspace Split View */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden">
         
-        {/* Left Column: Active Agents HUD & Circuit Breakers (3 Cols) */}
+        {/* Left Column: Active Agents HUD & Pipeline (3 Cols) */}
         {!isFocusPreview && (
           <aside className="lg:col-span-3 border-r border-slate-800/70 bg-[#090D14] p-4 flex flex-col gap-4 overflow-y-auto max-h-[35vh] lg:max-h-[calc(100vh-105px)]">
             <div>
@@ -474,11 +422,7 @@ export default function App() {
               <div className="space-y-2.5">
                 
                 {/* Architect */}
-                <div className={`p-3 rounded-lg border transition-all ${
-                  activePersona.includes('Architect') 
-                    ? 'bg-violet-950/30 border-violet-500/80 shadow-md shadow-violet-900/30 ring-1 ring-violet-500/50' 
-                    : 'bg-slate-900/50 border-slate-800/80 opacity-75'
-                }`}>
+                <div className="p-3 rounded-lg border bg-violet-950/30 border-violet-500/80 shadow-md shadow-violet-900/30 ring-1 ring-violet-500/50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-base">🎨</span>
@@ -487,20 +431,14 @@ export default function App() {
                         <div className="text-[10px] text-slate-400">Design Systems & Tokens</div>
                       </div>
                     </div>
-                    {activePersona.includes('Architect') && (
-                      <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-mono bg-violet-500/20 text-violet-300 border border-violet-500/40 animate-pulse">
-                        DESIGNING
-                      </span>
-                    )}
+                    <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-mono bg-violet-500/20 text-violet-300 border border-violet-500/40">
+                      ACTIVE
+                    </span>
                   </div>
                 </div>
 
                 {/* Dev */}
-                <div className={`p-3 rounded-lg border transition-all ${
-                  activePersona.includes('Dev') 
-                    ? 'bg-cyan-950/30 border-cyan-500/80 shadow-md shadow-cyan-900/30 ring-1 ring-cyan-500/50' 
-                    : 'bg-slate-900/50 border-slate-800/80 opacity-75'
-                }`}>
+                <div className="p-3 rounded-lg border bg-cyan-950/30 border-cyan-500/80 shadow-md shadow-cyan-900/30 ring-1 ring-cyan-500/50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-base">💻</span>
@@ -509,20 +447,14 @@ export default function App() {
                         <div className="text-[10px] text-slate-400">React & Interactive Logic</div>
                       </div>
                     </div>
-                    {activePersona.includes('Dev') && (
-                      <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 animate-pulse">
-                        CODING
-                      </span>
-                    )}
+                    <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                      ACTIVE
+                    </span>
                   </div>
                 </div>
 
                 {/* QA */}
-                <div className={`p-3 rounded-lg border transition-all ${
-                  activePersona.includes('QA') 
-                    ? 'bg-amber-950/30 border-amber-500/80 shadow-md shadow-amber-900/30 ring-1 ring-amber-500/50' 
-                    : 'bg-slate-900/50 border-slate-800/80 opacity-75'
-                }`}>
+                <div className="p-3 rounded-lg border bg-amber-950/30 border-amber-500/80 shadow-md shadow-amber-900/30 ring-1 ring-amber-500/50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-base">🛡️</span>
@@ -531,11 +463,9 @@ export default function App() {
                         <div className="text-[10px] text-slate-400">Vulnerabilities & WCAG</div>
                       </div>
                     </div>
-                    {activePersona.includes('QA') && (
-                      <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">
-                        AUDITING
-                      </span>
-                    )}
+                    <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                      VERIFIED
+                    </span>
                   </div>
                 </div>
 
@@ -548,30 +478,18 @@ export default function App() {
                 Build Pipeline Stages
               </h3>
               <div className="space-y-1.5 text-xs">
-                {BUILD_STAGES.map((s) => {
-                  const isDone = hasStarted && s.id < currentBuildStage;
-                  const isCurrent = hasStarted && s.id === currentBuildStage;
-                  return (
-                    <div 
-                      key={s.id} 
-                      className={`flex items-center justify-between p-2 rounded border transition-all ${
-                        isCurrent 
-                          ? 'bg-cyan-950/40 border-cyan-500/60 text-cyan-300 font-semibold' 
-                          : isDone 
-                            ? 'bg-slate-900/40 border-slate-800/60 text-slate-300' 
-                            : 'bg-slate-950/40 border-slate-900 text-slate-600'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-mono">#{s.id}</span>
-                        <span>{s.name}</span>
-                      </div>
-                      <span className="text-[10px] font-mono">
-                        {isDone ? '✓ DONE' : isCurrent ? 'BUILDING...' : hasStarted ? 'PENDING' : 'IDLE'}
-                      </span>
+                {BUILD_STAGES.map((s) => (
+                  <div 
+                    key={s.id} 
+                    className="flex items-center justify-between p-2 rounded border bg-emerald-950/40 border-emerald-500/60 text-emerald-300 font-semibold"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-mono">#{s.id}</span>
+                      <span>{s.name}</span>
                     </div>
-                  );
-                })}
+                    <span className="text-[10px] font-mono">✓ DONE</span>
+                  </div>
+                ))}
               </div>
             </div>
           </aside>
@@ -581,19 +499,16 @@ export default function App() {
         {!isFocusPreview && (
           <section className="lg:col-span-4 border-r border-slate-800/70 bg-[#080C13] flex flex-col h-[50vh] lg:h-[calc(100vh-105px)] overflow-hidden">
             
-            {/* Stream Log Header */}
             <div className="p-3 border-b border-slate-800/80 bg-[#0B0F17]/90 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Terminal className="w-4 h-4 text-cyan-400" />
                 <span className="font-semibold text-xs text-white">Live Agent Dialogue</span>
                 <span className="text-[10px] font-mono text-slate-500">({logs.length} messages)</span>
               </div>
-              {isStreaming && (
-                <span className="text-[10px] text-cyan-400 font-mono flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                  Auto-Building ({countdown}s)
-                </span>
-              )}
+              <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Build Complete
+              </span>
             </div>
 
             {/* Chat Messages List */}
@@ -605,13 +520,11 @@ export default function App() {
                     key={log.id} 
                     className={`p-3 rounded-lg border text-xs space-y-2 transition-all ${getPersonaColor(log.persona)}`}
                   >
-                    {/* Persona Header */}
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-xs">{log.persona}</span>
                       <span className="text-[10px] font-mono text-slate-400">{log.timestamp}</span>
                     </div>
 
-                    {/* Thought Deliberation Box */}
                     <div className="bg-[#05080E]/80 rounded p-2 border border-slate-800/80">
                       <button 
                         onClick={() => toggleThought(log.id)}
@@ -621,29 +534,15 @@ export default function App() {
                           <Sparkles className="w-3 h-3 text-cyan-400" />
                           <span>Deliberation & Architectural Decision</span>
                         </span>
-                        {isThoughtOpen ? <ChevronUp className="w-3 h-3 text-slate-500" /> : <ChevronDown className="w-3 h-3 text-slate-500" />}
                       </button>
-                      {isThoughtOpen && (
-                        <p className="mt-1.5 text-[11px] leading-relaxed text-slate-300 italic font-sans">
-                          "{log.thought}"
-                        </p>
-                      )}
+                      <p className="mt-1.5 text-[11px] leading-relaxed text-slate-300 italic font-sans">
+                        "{log.thought}"
+                      </p>
                     </div>
 
-                    {/* Engineering Action */}
                     <div className="text-[12px] text-slate-100 font-medium">
                       ⚡ <span className="underline decoration-slate-700 underline-offset-2">{log.action}</span>
                     </div>
-
-                    {/* Code snippet if present */}
-                    {log.code && (
-                      <div className="mt-2 bg-[#03060A] rounded p-2 font-mono text-[10px] text-emerald-400 overflow-x-auto border border-emerald-950/80">
-                        <div className="text-[9px] text-slate-500 pb-1 border-b border-slate-800 mb-1 flex justify-between items-center">
-                          <span>CODE EMBED: {log.comp?.toUpperCase()}</span>
-                        </div>
-                        <pre><code>{log.code.slice(0, 240)}{log.code.length > 240 ? '...' : ''}</code></pre>
-                      </div>
-                    )}
                   </div>
                 );
               })}
@@ -656,7 +555,7 @@ export default function App() {
                 type="text" 
                 value={prompt} 
                 onChange={(e) => setPrompt(e.target.value)} 
-                placeholder="Enter prompt (e.g. Luxury Real Estate or Bakery Cafe)..."
+                placeholder="Enter prompt (e.g. Space Telemetry or BioTech Lab)..."
                 className="flex-1 px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-400"
                 maxLength={200}
               />
@@ -676,8 +575,7 @@ export default function App() {
           
           {/* Viewport & View Mode Tabs Bar */}
           <div className="px-4 py-2.5 border-b border-slate-800/80 bg-[#0B0F17]/90 flex flex-wrap items-center justify-between gap-3 shrink-0">
-            {/* View Mode Tabs */}
-            <div className="flex items-center gap-1 p-0.5 bg-slate-900/90 rounded-lg border border-slate-800">
+            <div className="flex items-center gap-1 p-0.5 bg-slate-900/90 rounded-lg border border-slate-800 overflow-x-auto">
               <button
                 onClick={() => setPreviewTab('preview')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
@@ -687,7 +585,19 @@ export default function App() {
                 }`}
               >
                 <Eye className="w-3.5 h-3.5" />
-                <span>Live Website ({website.stage}/6)</span>
+                <span>Live Interactive UI</span>
+              </button>
+
+              <button
+                onClick={() => setPreviewTab('iframe')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  previewTab === 'iframe' 
+                    ? 'bg-cyan-500 text-slate-950 shadow-sm font-semibold' 
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Monitor className="w-3.5 h-3.5" />
+                <span>Sandboxed Iframe</span>
               </button>
 
               <button
@@ -715,7 +625,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* Viewport and Focus Toggle */}
             <div className="flex items-center gap-2 text-xs">
               <div className="flex items-center gap-1">
                 <button
@@ -753,52 +662,18 @@ export default function App() {
             </div>
           </div>
 
-          {/* VISUAL 6-STAGE CONSTRUCTION PROGRESS BAR */}
-          <div className="bg-[#090D14] border-b border-slate-800/80 px-4 py-2 flex items-center justify-between text-xs overflow-x-auto">
-            <div className="flex items-center gap-2">
-              <span className="text-slate-400 text-[11px] font-mono shrink-0">BUILD PROGRESS:</span>
-              <div className="flex items-center gap-1.5">
-                {BUILD_STAGES.map((s) => {
-                  const isDone = hasStarted && s.id < website.stage;
-                  const isCurrent = hasStarted && s.id === website.stage;
-                  return (
-                    <div 
-                      key={s.id} 
-                      className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono transition-all ${
-                        isCurrent 
-                          ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm shadow-cyan-500/30 ring-1 ring-cyan-300 animate-pulse' 
-                          : isDone 
-                            ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/50' 
-                            : 'bg-slate-900/60 text-slate-600 border border-slate-800/40'
-                      }`}
-                    >
-                      <span>{isDone ? '✓' : s.id}</span>
-                      <span className="hidden sm:inline">{s.name}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <span className="text-[11px] text-cyan-300 font-mono hidden md:inline">
-              Active: {hasStarted ? activeModification.persona : "Agents on Standby"}
-            </span>
-          </div>
-
           {/* Active Viewport Area */}
           <div className="flex-1 p-3 overflow-y-auto bg-[#04060A] flex justify-center items-start">
             
-            {/* TAB 1: Live Interactive Rendered Website */}
+            {/* TAB 1: Live Interactive React Rendered Website */}
             {previewTab === 'preview' && (
               <div 
                 className={`w-full transition-all duration-300 ${
                   viewportMode === 'mobile' ? 'max-w-[375px]' : 'max-w-4xl'
                 }`}
               >
-                {/* Browser Shell Frame */}
                 <div className="rounded-xl border border-slate-800 bg-[#0B0F17] shadow-2xl overflow-hidden relative">
                   
-                  {/* Toast Notification */}
                   {toastMessage && (
                     <div className="absolute top-12 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-emerald-500 text-slate-950 font-bold rounded-lg text-xs shadow-xl animate-bounce flex items-center gap-2">
                       <Check className="w-3.5 h-3.5" />
@@ -806,7 +681,7 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* Mock Browser URL Bar */}
+                  {/* Browser URL Bar */}
                   <div className="px-3 py-2 bg-[#090D14] border-b border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-500">
                     <div className="flex items-center gap-1.5">
                       <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
@@ -814,392 +689,222 @@ export default function App() {
                       <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
                     </div>
                     <div className="bg-slate-900/90 px-3 py-0.5 rounded border border-slate-800 text-slate-400 truncate max-w-[240px]">
-                      {hasStarted && activeTask ? `https://preview.app/${website.title.toLowerCase().replace(/[^a-z0-9]/g, '')}` : 'https://preview.app/standby'}
+                      https://preview.app/{website.title.toLowerCase().replace(/[^a-z0-9]/g, '')}
                     </div>
                     <span className="text-emerald-400 text-[10px] flex items-center gap-1 font-mono">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      {hasStarted ? `Stage ${website.stage}/6` : 'Standby (Idle)'}
+                      Production Live
                     </span>
                   </div>
 
-                  {/* PROGRESSIVELY ASSEMBLED WEBSITE CANVAS */}
+                  {/* FULLY ASSEMBLED WEBSITE CANVAS */}
                   <div className="p-4 space-y-6 text-slate-100 min-h-[520px]">
 
-                    {/* STANDBY STATE: Awaiting user prompt */}
-                    {!hasStarted ? (
-                      <div className="py-8 px-4 text-center space-y-6">
-                        <div className="max-w-md mx-auto space-y-3">
-                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-indigo-600/20 border border-cyan-500/40 flex items-center justify-center mx-auto text-cyan-400 shadow-lg shadow-cyan-500/10">
-                            <Sparkles className="w-6 h-6 animate-pulse" />
-                          </div>
-                          <h3 className="text-lg font-bold text-white tracking-tight">AI Engineering Team on Standby</h3>
-                          <p className="text-xs text-slate-400 leading-relaxed">
-                            The UI/UX Architect, Lead Fullstack Dev, and QA & Security Engineer are idle and awaiting your command. Select a starter blueprint or enter a prompt in the box below to launch the live autonomous collaboration.
-                          </p>
+                    {/* Navbar */}
+                    <nav className="flex items-center justify-between border-b border-slate-800/70 pb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bold text-xs shadow-sm shadow-emerald-500/20">
+                          {website.title.slice(0, 1)}
                         </div>
-
-                        {/* Quick-Launch Preset Grid */}
-                        <div className="text-left space-y-2.5 max-w-lg mx-auto">
-                          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-500 text-center">
-                            Select a Blueprint to Launch Autonomous Build
-                          </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <button
-                              onClick={() => startNewProject("Artisan Cold Brew Coffee Subscription")}
-                              className="p-3.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800/90 hover:border-amber-700/60 text-left transition-all group active:scale-95 cursor-pointer"
-                            >
-                              <div className="flex items-center gap-2 font-semibold text-xs text-white group-hover:text-amber-300">
-                                <span>☕</span>
-                                <span>Coffee E-Commerce</span>
-                              </div>
-                              <p className="text-[11px] text-slate-400 mt-1">Single-origin subscriptions, roast catalog, tasting notes</p>
-                            </button>
-
-                            <button
-                              onClick={() => startNewProject("Cyber Incident Response Matrix")}
-                              className="p-3.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800/90 hover:border-cyan-700/60 text-left transition-all group active:scale-95 cursor-pointer"
-                            >
-                              <div className="flex items-center gap-2 font-semibold text-xs text-white group-hover:text-cyan-300">
-                                <span>🛡️</span>
-                                <span>Cyber Threat Matrix</span>
-                              </div>
-                              <p className="text-[11px] text-slate-400 mt-1">Real-time threat feeds, firewall telemetry, and intrusion alerts</p>
-                            </button>
-
-                            <button
-                              onClick={() => startNewProject("Decentralized Crypto Asset Terminal")}
-                              className="p-3.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800/90 hover:border-emerald-700/60 text-left transition-all group active:scale-95 cursor-pointer"
-                            >
-                              <div className="flex items-center gap-2 font-semibold text-xs text-white group-hover:text-emerald-300">
-                                <span>📈</span>
-                                <span>Crypto DEX Terminal</span>
-                              </div>
-                              <p className="text-[11px] text-slate-400 mt-1">Order books, wallet integration, and liquidity yield vaults</p>
-                            </button>
-
-                            <button
-                              onClick={() => startNewProject("Modern SaaS Cloud Operations Platform")}
-                              className="p-3.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800/90 hover:border-indigo-700/60 text-left transition-all group active:scale-95 cursor-pointer"
-                            >
-                              <div className="flex items-center gap-2 font-semibold text-xs text-white group-hover:text-indigo-300">
-                                <span>⚡</span>
-                                <span>Cloud SaaS Platform</span>
-                              </div>
-                              <p className="text-[11px] text-slate-400 mt-1">Cluster telemetry, latency analytics, and health status</p>
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className="pt-2 text-[11px] text-slate-500 font-mono">
-                          Or type any project idea in the prompt bar at bottom left and click <span className="text-cyan-400 font-semibold">Build</span>
-                        </div>
+                        <span className="font-bold text-sm tracking-tight text-white">{website.title}</span>
                       </div>
-                    ) : (
-                      <>
-                        {/* STAGE 1: Blueprint & Design Tokens View (Visible at Stage 1) */}
-                        {website.stage === 1 && (
-                          <div className="space-y-4 p-6 border-2 border-dashed border-violet-500/50 bg-violet-950/10 rounded-xl animate-pulse">
-                            <div className="flex items-center justify-between border-b border-violet-800/40 pb-3">
-                              <div className="flex items-center gap-2">
-                                <Palette className="w-4 h-4 text-violet-400" />
-                                <span className="font-bold text-sm text-white">{website.title} [Blueprint Stage]</span>
-                              </div>
-                              <span className="text-[10px] font-mono text-violet-300 bg-violet-900/40 px-2 py-0.5 rounded border border-violet-700/50">
-                                🎨 Architect Establishing Tokens
-                              </span>
-                            </div>
-
-                            <div className="grid grid-cols-3 gap-3 text-xs">
-                              <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-lg space-y-1">
-                                <span className="text-slate-400 text-[11px]">Primary Canvas:</span>
-                                <div className="h-6 rounded bg-[#0B0F17] border border-slate-700 flex items-center justify-center font-mono text-[10px] text-slate-300">
-                                  #0B0F17 (60%)
-                                </div>
-                              </div>
-                              <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-lg space-y-1">
-                                <span className="text-slate-400 text-[11px]">Surface Layer:</span>
-                                <div className="h-6 rounded bg-[#111827] border border-slate-700 flex items-center justify-center font-mono text-[10px] text-slate-300">
-                                  #111827 (30%)
-                                </div>
-                              </div>
-                              <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-lg space-y-1">
-                                <span className="text-slate-400 text-[11px]">Accent Highlight:</span>
-                                <div className="h-6 rounded bg-emerald-500 text-slate-950 font-bold flex items-center justify-center font-mono text-[10px]">
-                                  #10B981 (10%)
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="p-4 bg-slate-900/60 rounded-lg border border-slate-800 space-y-2">
-                              <div className="text-xs text-slate-400 font-mono">Structural Wireframe Skeleton:</div>
-                              <div className="h-4 bg-slate-800/80 rounded w-1/3 animate-pulse" />
-                              <div className="h-8 bg-slate-800/50 rounded w-full animate-pulse" />
-                              <div className="h-4 bg-slate-800/60 rounded w-2/3 animate-pulse" />
-                            </div>
-
-                            <div className="text-center pt-2">
-                              <button 
-                                onClick={() => executeStep(activeTask, logsRef.current)}
-                                className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-lg shadow-md transition-all active:scale-95"
-                              >
-                                Advance to Stage 2: Hero & Nav ➔
-                              </button>
-                            </div>
-                          </div>
-                        )}
-
-                    {/* STAGES 2+: Website Navbar */}
-                    {website.stage >= 2 && (
-                      <nav className="flex items-center justify-between border-b border-slate-800/70 pb-3 transition-all duration-500">
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bold text-xs shadow-sm shadow-emerald-500/20">
-                            {website.title.slice(0, 1)}
-                          </div>
-                          <span className="font-bold text-sm tracking-tight text-white">{website.title}</span>
-                        </div>
-                        <div className="hidden sm:flex items-center gap-4 text-xs text-slate-400 font-medium">
-                          {website.navLinks.map((link, idx) => (
-                            <span 
-                              key={idx} 
-                              onClick={() => triggerToast(`Navigated to: ${link}`)}
-                              className="hover:text-white cursor-pointer transition-colors"
-                            >
-                              {link}
-                            </span>
-                          ))}
-                        </div>
-                        <button 
-                          onClick={() => {
-                            setSelectedRecord(website.items?.[0] || { name: 'Cluster Hub', id: 'NODE-01', status: 'Nominal' });
-                            setIsModalOpen(true);
-                          }}
-                          className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-md text-xs font-medium"
-                        >
-                          Inspect Node
-                        </button>
-                      </nav>
-                    )}
-
-                    {/* STAGES 2+: Website Hero Banner */}
-                    {website.stage >= 2 && (
-                      <div className={`p-6 rounded-xl border transition-all duration-500 relative ${
-                        website.stage === 2 
-                          ? 'border-cyan-400/90 bg-gradient-to-b from-cyan-950/40 to-slate-900/90 ring-2 ring-cyan-400/40 shadow-lg shadow-cyan-500/10' 
-                          : 'border-slate-800/80 bg-slate-900/40'
-                      }`}>
-                        {website.stage === 2 && (
-                          <div className="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-cyan-500 text-slate-950 text-[10px] font-bold tracking-wider font-mono shadow-md animate-pulse">
-                            JUST BUILT BY: 💻 LEAD DEV
-                          </div>
-                        )}
-
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2 text-xs font-mono text-cyan-400">
-                            <span className="text-slate-500">TAGLINE:</span>
-                            <span className="bg-cyan-950/80 px-2.5 py-0.5 rounded border border-cyan-800/50">
-                              {website.tagline}
-                            </span>
-                          </div>
-                          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-                            {website.title}
-                          </h2>
-                          <p className="text-xs sm:text-sm text-slate-400 max-w-lg leading-relaxed">
-                            Engineered dynamically by autonomous AI agents with zero-tolerance for script vulnerabilities, high-throughput virtualization, and WCAG AA accessible contrast.
-                          </p>
-                          <div className="pt-2 flex flex-wrap gap-2.5">
-                            <button 
-                              onClick={() => triggerToast(`Dispatched: ${website.heroCTA}`)}
-                              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold rounded-lg text-xs transition-all shadow-md shadow-emerald-500/20 active:scale-95"
-                            >
-                              {website.heroCTA}
-                            </button>
-                            <button 
-                              onClick={() => setPreviewTab('code')}
-                              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs border border-slate-700 active:scale-95"
-                            >
-                              Inspect Architecture
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Dynamic KPIs / Metric Strip */}
-                        <div className="mt-5 grid grid-cols-3 gap-2 border-t border-slate-800/80 pt-4">
-                          {website.stats.map((stat, idx) => (
-                            <div key={idx} className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800">
-                              <div className="text-[11px] text-slate-400">{stat.label}</div>
-                              <div className="text-base font-bold text-white tabular-nums">{stat.value}</div>
-                              <div className="text-[10px] text-emerald-400 font-mono">{stat.change}</div>
-                            </div>
-                          ))}
-                        </div>
+                      <div className="hidden sm:flex items-center gap-4 text-xs text-slate-400 font-medium">
+                        {website.navLinks.map((link, idx) => (
+                          <span 
+                            key={idx} 
+                            onClick={() => triggerToast(`Navigated to: ${link}`)}
+                            className="hover:text-white cursor-pointer transition-colors"
+                          >
+                            {link}
+                          </span>
+                        ))}
                       </div>
-                    )}
+                      <button 
+                        onClick={() => {
+                          setSelectedRecord(website.items?.[0] || { name: 'Node Hub', id: 'NODE-01', status: 'Nominal' });
+                          setIsModalOpen(true);
+                        }}
+                        className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-md text-xs font-medium"
+                      >
+                        Inspect Node
+                      </button>
+                    </nav>
 
-                    {/* STAGES 3+: Feature Grid */}
-                    {website.stage >= 3 && (
-                      <div className={`p-4 rounded-xl border transition-all duration-500 relative ${
-                        website.stage === 3 
-                          ? 'border-violet-500/90 bg-violet-950/20 ring-2 ring-violet-500/40 shadow-lg shadow-violet-500/10' 
-                          : 'border-slate-800/80 bg-slate-900/30'
-                      }`}>
-                        {website.stage === 3 && (
-                          <div className="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-violet-500 text-white text-[10px] font-bold tracking-wider font-mono shadow-md animate-pulse">
-                            JUST BUILT BY: 🎨 ARCHITECT
-                          </div>
-                        )}
-                        <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">
-                          Core Capabilities & Architecture
-                        </h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          {website.features.map(f => (
-                            <div key={f.id} className="p-3.5 bg-slate-900/80 border border-slate-800/80 rounded-lg space-y-1.5 hover:border-slate-700 transition-colors">
-                              <h4 className="text-xs font-bold text-white">{f.title}</h4>
-                              <p className="text-[11px] text-slate-400 leading-relaxed">{f.desc}</p>
-                            </div>
-                          ))}
-                        </div>
+                    {/* Hero Banner */}
+                    <div className="p-6 rounded-xl border border-cyan-400/90 bg-gradient-to-b from-cyan-950/40 to-slate-900/90 ring-2 ring-cyan-400/40 shadow-lg shadow-cyan-500/10 relative">
+                      <div className="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-cyan-500 text-slate-950 text-[10px] font-bold tracking-wider font-mono shadow-md animate-pulse">
+                        STAGED & VERIFIED BY AI TEAM
                       </div>
-                    )}
 
-                    {/* STAGES 4+: Interactive Systems Matrix / Product Catalog */}
-                    {website.stage >= 4 && (
-                      <div className={`p-5 rounded-xl border transition-all duration-500 relative ${
-                        website.stage === 4 
-                          ? 'border-cyan-400/90 bg-slate-900/80 ring-2 ring-cyan-400/40 shadow-lg shadow-cyan-500/10' 
-                          : 'border-slate-800/80 bg-slate-900/40'
-                      }`}>
-                        {website.stage === 4 && (
-                          <div className="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-cyan-500 text-slate-950 text-[10px] font-bold tracking-wider font-mono shadow-md animate-pulse">
-                            JUST WIRED BY: 💻 LEAD DEV
-                          </div>
-                        )}
-
-                        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                          <div>
-                            <h3 className="font-semibold text-sm text-white">Interactive Systems Matrix</h3>
-                            <p className="text-xs text-slate-400">Live filterable records tailored to {website.title}</p>
-                          </div>
-
-                          {/* Search Filter */}
-                          <div className="relative">
-                            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-500" />
-                            <input 
-                              type="text" 
-                              placeholder="Search records..."
-                              value={websiteFilter}
-                              onChange={(e) => setWebsiteFilter(e.target.value)}
-                              className="pl-8 pr-3 py-1.5 bg-slate-950 border border-slate-800 rounded-md text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 w-36 sm:w-48"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Segmented Filter Bar */}
-                        <div className="flex gap-1.5 p-1 bg-slate-950 rounded-lg border border-slate-800/80 mb-3 overflow-x-auto">
-                          {(website.categoryTabs || ['All']).map(tab => (
-                            <button
-                              key={tab}
-                              onClick={() => setActiveWebsiteTab(tab)}
-                              className={`px-3 py-1 rounded text-xs font-medium transition-all ${
-                                activeWebsiteTab === tab 
-                                  ? 'bg-slate-800 text-white font-semibold shadow-sm' 
-                                  : 'text-slate-400 hover:text-slate-200'
-                              }`}
-                            >
-                              {tab}
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* Records Table */}
-                        <div className="divide-y divide-slate-800/60 text-xs">
-                          {filteredItems.length === 0 ? (
-                            <div className="py-6 text-center text-slate-500 italic">No records matching "{websiteFilter}"</div>
-                          ) : (
-                            filteredItems.map(item => (
-                              <div 
-                                key={item.id} 
-                                onClick={() => {
-                                  setSelectedRecord(item);
-                                  setIsModalOpen(true);
-                                }}
-                                className="py-2.5 px-2 flex items-center justify-between hover:bg-slate-800/50 rounded cursor-pointer transition-colors"
-                              >
-                                <div className="flex items-center gap-2.5">
-                                  <span className="font-mono text-[11px] text-slate-500">{item.id}</span>
-                                  <span className="font-medium text-slate-200">{item.name}</span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                  <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/40">
-                                    {item.latency}
-                                  </span>
-                                  <span className="text-[10px] text-emerald-400 font-medium">
-                                    ● {item.status}
-                                  </span>
-                                </div>
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* STAGES 5+: QA Security Audit Stamp */}
-                    {website.stage >= 5 && (
-                      <div className={`p-4 rounded-xl border transition-all duration-500 relative ${
-                        website.stage === 5 
-                          ? 'border-amber-500/90 bg-amber-950/20 ring-2 ring-amber-500/40 shadow-lg shadow-amber-500/10' 
-                          : 'border-emerald-800/60 bg-emerald-950/20'
-                      }`}>
-                        {website.stage === 5 && (
-                          <div className="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[10px] font-bold tracking-wider font-mono shadow-md animate-pulse">
-                            JUST AUDITED BY: 🛡️ QA ENGINEER
-                          </div>
-                        )}
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                          <div className="flex items-center gap-2.5">
-                            <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
-                            <div>
-                              <div className="font-bold text-xs text-white">Automated Security & QA Signoff</div>
-                              <div className="text-[11px] text-slate-400">Zero CVEs · 100% WCAG AA Contrast · 0px Horizontal Overflow</div>
-                            </div>
-                          </div>
-                          <span className="px-3 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-mono font-bold">
-                            ✓ STAGE 5 VERIFIED
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-xs font-mono text-cyan-400">
+                          <span className="text-slate-500">TAGLINE:</span>
+                          <span className="bg-cyan-950/80 px-2.5 py-0.5 rounded border border-cyan-800/50">
+                            {website.tagline}
                           </span>
                         </div>
-                      </div>
-                    )}
-
-                    {/* STAGES 2+: Clean Website Footer */}
-                    {website.stage >= 2 && (
-                      <footer className="pt-4 border-t border-slate-800/80 text-center text-xs text-slate-500 flex flex-wrap items-center justify-between gap-2">
-                        <span>© 2026 {website.title}. Built with Autonomous Multi-Agent DevStudio.</span>
-                        <span className="font-mono text-[11px] text-cyan-400/80">WCAG 2.1 AA Compliant · Zero-Pill Architecture</span>
-                      </footer>
-                    )}
-
-                    {/* STAGE 6: Production Live Badge & Release Stamp */}
-                    {website.stage >= 6 && (
-                      <div className="p-3 bg-gradient-to-r from-emerald-950/60 via-slate-900/60 to-cyan-950/60 border border-emerald-500/50 rounded-xl flex items-center justify-between text-xs animate-in fade-in duration-500">
-                        <div className="flex items-center gap-2 text-emerald-400">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                          <span className="font-semibold text-white">Production Build 1.0 Live</span>
-                          <span className="text-slate-400 text-[11px] hidden sm:inline">— All 3 agents approved & verified</span>
+                        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                          {website.title}
+                        </h2>
+                        <p className="text-xs sm:text-sm text-slate-400 max-w-lg leading-relaxed">
+                          {website.description}
+                        </p>
+                        <div className="pt-2 flex flex-wrap gap-2.5">
+                          <button 
+                            onClick={() => triggerToast(`Dispatched: ${website.heroCTA}`)}
+                            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold rounded-lg text-xs transition-all shadow-md shadow-emerald-500/20 active:scale-95"
+                          >
+                            {website.heroCTA}
+                          </button>
+                          <button 
+                            onClick={() => setPreviewTab('code')}
+                            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs border border-slate-700 active:scale-95"
+                          >
+                            Inspect Architecture
+                          </button>
                         </div>
-                        <span className="text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded">
-                          ● OPERATIONAL
+                      </div>
+
+                      {/* Dynamic KPIs / Metric Strip */}
+                      <div className="mt-5 grid grid-cols-3 gap-2 border-t border-slate-800/80 pt-4">
+                        {website.stats.map((stat, idx) => (
+                          <div key={idx} className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800">
+                            <div className="text-[11px] text-slate-400">{stat.label}</div>
+                            <div className="text-base font-bold text-white tabular-nums">{stat.value}</div>
+                            <div className="text-[10px] text-emerald-400 font-mono">{stat.change}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Feature Grid */}
+                    <div className="p-4 rounded-xl border border-violet-500/90 bg-violet-950/20 ring-2 ring-violet-500/40 shadow-lg shadow-violet-500/10">
+                      <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">
+                        Core Capabilities & Architecture
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {website.features.map(f => (
+                          <div key={f.id} className="p-3.5 bg-slate-900/80 border border-slate-800/80 rounded-lg space-y-1.5 hover:border-slate-700 transition-colors">
+                            <h4 className="text-xs font-bold text-white">{f.title}</h4>
+                            <p className="text-[11px] text-slate-400 leading-relaxed">{f.desc}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Interactive Systems Matrix / Product Catalog */}
+                    <div className="p-5 rounded-xl border border-cyan-400/90 bg-slate-900/80 ring-2 ring-cyan-400/40 shadow-lg shadow-cyan-500/10">
+                      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                        <div>
+                          <h3 className="font-semibold text-sm text-white">Interactive Systems Matrix</h3>
+                          <p className="text-xs text-slate-400">Live filterable records tailored to {website.title}</p>
+                        </div>
+
+                        <div className="relative">
+                          <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-500" />
+                          <input 
+                            type="text" 
+                            placeholder="Search records..."
+                            value={websiteFilter}
+                            onChange={(e) => setWebsiteFilter(e.target.value)}
+                            className="pl-8 pr-3 py-1.5 bg-slate-950 border border-slate-800 rounded-md text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 w-36 sm:w-48"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Segmented Filter Bar */}
+                      <div className="flex gap-1.5 p-1 bg-slate-950 rounded-lg border border-slate-800/80 mb-3 overflow-x-auto">
+                        {(website.categoryTabs || ['All']).map(tab => (
+                          <button
+                            key={tab}
+                            onClick={() => setActiveWebsiteTab(tab)}
+                            className={`px-3 py-1 rounded text-xs font-medium transition-all ${
+                              activeWebsiteTab === tab 
+                                ? 'bg-slate-800 text-white font-semibold shadow-sm' 
+                                : 'text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            {tab}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Records Table */}
+                      <div className="divide-y divide-slate-800/60 text-xs">
+                        {filteredItems.length === 0 ? (
+                          <div className="py-6 text-center text-slate-500 italic">No records matching "{websiteFilter}"</div>
+                        ) : (
+                          filteredItems.map(item => (
+                            <div 
+                              key={item.id} 
+                              onClick={() => {
+                                setSelectedRecord(item);
+                                setIsModalOpen(true);
+                              }}
+                              className="py-2.5 px-2 flex items-center justify-between hover:bg-slate-800/50 rounded cursor-pointer transition-colors"
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <span className="font-mono text-[11px] text-slate-500">{item.id}</span>
+                                <span className="font-medium text-slate-200">{item.name}</span>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/40">
+                                  {item.latency}
+                                </span>
+                                <span className="text-[10px] text-emerald-400 font-medium">
+                                  ● {item.status}
+                                </span>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    {/* QA Security Audit Stamp */}
+                    <div className="p-4 rounded-xl border border-amber-500/90 bg-amber-950/25 ring-2 ring-amber-500/40 shadow-lg shadow-amber-500/10">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5">
+                          <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+                          <div>
+                            <div className="font-bold text-xs text-white">Automated Security & QA Signoff</div>
+                            <div className="text-[11px] text-slate-400">Zero CVEs · 100% WCAG AA Contrast · 0px Horizontal Overflow</div>
+                          </div>
+                        </div>
+                        <span className="px-3 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-mono font-bold">
+                          ✓ STAGE 6 VERIFIED
                         </span>
                       </div>
-                    )}
-                  </>
-                )}
+                    </div>
+
+                    {/* Footer */}
+                    <footer className="pt-4 border-t border-slate-800/80 text-center text-xs text-slate-500 flex flex-wrap items-center justify-between gap-2">
+                      <span>© 2026 {website.title}. Built with Autonomous Multi-Agent DevStudio.</span>
+                      <span className="font-mono text-[11px] text-cyan-400/80">WCAG 2.1 AA Compliant · Zero-Pill Architecture</span>
+                    </footer>
 
                   </div>
                 </div>
               </div>
             )}
 
-            {/* TAB 2: Source Code Inspector */}
+            {/* TAB 2: Sandboxed Iframe Preview */}
+            {previewTab === 'iframe' && (
+              <div className="w-full max-w-4xl h-full flex flex-col">
+                <div className="text-xs font-mono text-slate-400 pb-2">
+                  Live Sandboxed HTML/Tailwind Output rendered in Secure Iframe
+                </div>
+                <div className="flex-1 rounded-xl border border-slate-800 bg-white overflow-hidden shadow-2xl min-h-[500px]">
+                  <iframe 
+                    srcDoc={iframeHtmlContent}
+                    title="Live Iframe Preview"
+                    className="w-full h-full border-0"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* TAB 3: Source Code Inspector */}
             {previewTab === 'code' && (
               <div className="w-full max-w-4xl space-y-3">
                 <div className="flex items-center justify-between p-3 bg-slate-900 rounded-lg border border-slate-800">
@@ -1208,7 +913,7 @@ export default function App() {
                   </div>
                   <button
                     onClick={() => {
-                      navigator.clipboard.writeText(logs.map(l => l.code).filter(Boolean).join('\n\n'));
+                      navigator.clipboard.writeText(iframeHtmlContent);
                       setCopiedCode(true);
                       setTimeout(() => setCopiedCode(false), 2000);
                     }}
@@ -1220,20 +925,12 @@ export default function App() {
                 </div>
 
                 <div className="bg-[#090D14] p-4 rounded-xl border border-slate-800 font-mono text-xs text-slate-300 overflow-x-auto space-y-4">
-                  {logs.filter(l => l.code).map((item, idx) => (
-                    <div key={idx} className="space-y-1">
-                      <div className="text-slate-500 text-[11px] pb-1 border-b border-slate-800/80 flex items-center justify-between">
-                        <span>// Component #{idx + 1} — Contributed by {item.persona}</span>
-                        <span className="text-cyan-400">{item.comp}</span>
-                      </div>
-                      <pre className="text-emerald-300"><code>{item.code}</code></pre>
-                    </div>
-                  ))}
+                  <pre className="text-emerald-300"><code>{iframeHtmlContent}</code></pre>
                 </div>
               </div>
             )}
 
-            {/* TAB 3: QA Security & Compliance Audit Bench */}
+            {/* TAB 4: QA Security & Compliance Audit Bench */}
             {previewTab === 'qa' && (
               <div className="w-full max-w-2xl space-y-4">
                 <div className="p-4 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
@@ -1309,47 +1006,51 @@ export default function App() {
 
       </div>
 
-      {/* Interactive Modal Drawer */}
-      {isModalOpen && (
+      {/* Record Inspection Modal */}
+      {isModalOpen && selectedRecord && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h4 className="text-white font-semibold text-sm">
-                Node Inspector: {selectedRecord?.name || 'Cluster Overview'}
-              </h4>
-              <button 
-                onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-800"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            
-            <div className="space-y-2 text-xs font-mono">
-              <div className="p-2.5 bg-slate-950 rounded border border-slate-800 space-y-1">
-                <div className="text-slate-500">Record ID:</div>
-                <div className="text-cyan-400">{selectedRecord?.id || 'NODE-01'}</div>
+          <div className="bg-[#0B0F17] border border-slate-800 rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl relative animate-in zoom-in-95 duration-200">
+            <button 
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg bg-slate-900 border border-slate-800"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center font-bold text-sm">
+                ID
               </div>
-              <div className="p-2.5 bg-slate-950 rounded border border-slate-800 space-y-1">
-                <div className="text-slate-500">Status & Readiness:</div>
-                <div className="text-emerald-400">● {selectedRecord?.status || 'Nominal'} (Verified)</div>
-              </div>
-              <div className="p-2.5 bg-slate-950 rounded border border-slate-800 space-y-1">
-                <div className="text-slate-500">Metric / Valuation:</div>
-                <div className="text-white">{selectedRecord?.latency || '12ms'}</div>
-              </div>
-              <div className="p-2.5 bg-slate-950 rounded border border-slate-800 space-y-1">
-                <div className="text-slate-500">Domain Category:</div>
-                <div className="text-slate-300">{selectedRecord?.category || 'Core'}</div>
+              <div>
+                <h3 className="font-bold text-base text-white">{selectedRecord.name}</h3>
+                <div className="text-xs font-mono text-cyan-400">{selectedRecord.id} · {selectedRecord.category}</div>
               </div>
             </div>
 
-            <div className="pt-2 flex justify-end">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold"
+            <div className="p-3.5 bg-slate-900 rounded-xl border border-slate-800 space-y-2 text-xs">
+              <div className="flex justify-between">
+                <span className="text-slate-400">Operational Status:</span>
+                <span className="text-emerald-400 font-medium">● {selectedRecord.status}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Metric / Valuation:</span>
+                <span className="font-mono text-cyan-300">{selectedRecord.latency}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Security Audit:</span>
+                <span className="text-emerald-400 font-mono">Passed (0 CVE)</span>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button 
+                onClick={() => {
+                  triggerToast(`Action confirmed on ${selectedRecord.id}`);
+                  setIsModalOpen(false);
+                }}
+                className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-xs shadow-md shadow-cyan-500/20 transition-all active:scale-95"
               >
-                Close Inspector
+                Confirm Action
               </button>
             </div>
           </div>

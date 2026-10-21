@@ -23,13 +23,11 @@ export interface WebsiteState {
 export function cleanPromptName(prompt: string): string {
   if (!prompt || !prompt.trim()) return "DevStudio Project";
   let clean = prompt.trim();
-  // Remove command prefixes
   clean = clean.replace(/^(make|build|create|design|generate|code|develop)\s+(me\s+)?(a\s+|an\s+|the\s+)?/i, '');
   clean = clean.replace(/^(a\s+|an\s+|the\s+)/i, '');
   clean = clean.replace(/\s+(website|web\s*site|app|application|platform|page|clone|portal)$/i, '');
   clean = clean.trim();
   if (!clean) return "DevStudio Project";
-  // Capitalize words
   return clean
     .split(/\s+/)
     .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
@@ -40,19 +38,83 @@ export function synthesizeDomainWebsite(rawPrompt: string): WebsiteState {
   const p = (rawPrompt || "").toLowerCase().trim();
   const cleanedName = cleanPromptName(rawPrompt);
 
-  // 1. CHEWY / PET CARE / ANIMALS / DOGS / CATS / VET
-  if (/chewy|pet|dog|cat|puppy|kitten|vet|veterinar|animal|paw|bark|kibble|aquarium|canine|feline/i.test(p)) {
-    const isChewyNamed = /chewy/i.test(p);
-    const brand = isChewyNamed ? "Chewy Pet Supply Co." : `${cleanedName} Pet Care Co.`;
+  // 1. SPACE / ASTRONOMY / ORBIT / SATELLITE / SPACEX
+  if (/space|orbit|satellite|rocket|astronomy|cosmos|mars|galaxy|star|nasa|spacex|telescope/i.test(p)) {
     return {
-      title: brand,
-      tagline: "Where Pet Parents Shop for Food, Toys, Treats & Healthcare",
-      description: "America's most trusted destination for pet parents. Save 35% on your first Autoship order, enjoy free 1-2 day delivery over $49, and connect with licensed veterinarians 24/7.",
+      title: "OrbitDynamics Deep Space Telemetry",
+      tagline: "Next-Generation Orbital Intelligence & Autonomous Satellite Constellations",
+      description: "Real-time orbital tracking, sub-meter Earth observation imagery, and autonomous collision avoidance telemetry for commercial space operations.",
+      theme: "cyan",
+      themeAccent: "#06B6D4",
+      stage: 6,
+      currentSection: "full_site",
+      navLinks: ["Constellation Map", "Telemetry Feed", "Launch Schedules", "Deep Space"],
+      heroCTA: "Deploy Satellite Node",
+      heroSecondaryCTA: "View Orbital Map",
+      stats: [
+        { label: "Active Satellites", value: "342 Constellation", change: "99.98% Uptime" },
+        { label: "Orbital Velocity", value: "7.8 km/s", change: "Low Earth Orbit" },
+        { label: "Telemetry Latency", value: "12ms", change: "Laser Link" }
+      ],
+      features: [
+        { id: "1", title: "Autonomous Collision Avoidance", desc: "AI-driven thruster adjustment preventing space debris conjunctions in real time." },
+        { id: "2", title: "Sub-Meter Optical Imaging", desc: "High-resolution multispectral earth observation sensors for climate and logistics." },
+        { id: "3", title: "Quantum Encrypted Downlink", desc: "Post-quantum cryptography securing high-bandwidth satellite telemetry." }
+      ],
+      categoryTabs: ["All", "LEO Satellites", "Deep Space", "Launch Vehicles"],
+      items: [
+        { id: "SAT-01", name: "Sentinel-Alpha Earth Observation Hub", status: "Active Orbit", latency: "11ms", category: "LEO Satellites" },
+        { id: "SAT-02", name: "Helios Solar Flare Early Warning Relay", status: "Nominal", latency: "14ms", category: "LEO Satellites" },
+        { id: "SAT-03", name: "Lunar Gateway Relay Station Beta", status: "Standby", latency: "1.3s", category: "Deep Space" },
+        { id: "SAT-04", name: "Falcon-Heavy Block 5 Booster", status: "Ready to Launch", latency: "T-minus 4h", category: "Launch Vehicles" }
+      ]
+    };
+  }
+
+  // 2. BIOTECH / GENOMICS / HEALTH / CRISPR / LAB
+  if (/biotech|genomic|dna|crispr|gene|biology|lab|research|cure|health|medical|pharma|bio/i.test(p)) {
+    return {
+      title: "HelixGenomics Research Institute",
+      tagline: "Precision Gene Editing & Single-Cell Transcriptomic Discovery",
+      description: "Accelerating therapeutic breakthroughs with high-throughput CRISPR screening, automated sequencing pipelines, and AI protein folding.",
+      theme: "emerald",
+      themeAccent: "#10B981",
+      stage: 6,
+      currentSection: "full_site",
+      navLinks: ["Sequencing Lab", "CRISPR Library", "Protein Folding", "Clinical Trials"],
+      heroCTA: "Request Assay Run",
+      heroSecondaryCTA: "Explore Genomes",
+      stats: [
+        { label: "Sequenced Genomes", value: "1.4M+", change: "High Precision" },
+        { label: "Folding Accuracy", value: "99.4%", change: "AlphaFold Core" },
+        { label: "Discovery Speed", value: "48 Hours", change: "Target to Lead" }
+      ],
+      features: [
+        { id: "1", title: "High-Throughput CRISPR Array", desc: "Multiplexed library screening targeting 20,000 human genes simultaneously." },
+        { id: "2", title: "AI Protein Structure Prediction", desc: "Atomic-level 3D molecular modeling predicting ligand binding affinities." },
+        { id: "3", title: "Secure Genomic Vault", desc: "HIPAA and GDPR certified federated learning protecting patient privacy." }
+      ],
+      categoryTabs: ["All", "Sequencing", "CRISPR Assays", "Proteins"],
+      items: [
+        { id: "BIO-01", name: "Illumina NovaSeq X Plus High-Yield Run", status: "Sequencing", latency: "4.2h left", category: "Sequencing" },
+        { id: "BIO-02", name: "CRISPR-Cas9 Knockout Library V4", status: "Ready", latency: "100%", category: "CRISPR Assays" },
+        { id: "BIO-03", name: "Monoclonal Antibody Target #842", status: "Folded", latency: "0.2Å RMSD", category: "Proteins" },
+        { id: "BIO-04", name: "Single-Cell RNA Transcriptome Matrix", status: "Analyzed", latency: "12M cells", category: "Sequencing" }
+      ]
+    };
+  }
+
+  // 3. PET CARE / CHEWY / ANIMALS
+  if (/chewy|pet|dog|cat|puppy|kitten|vet|veterinar|animal|paw|bark|kibble/i.test(p)) {
+    return {
+      title: "Chewy Pet Supply Co.",
+      tagline: "Where Pet Parents Shop for Food, Toys, Treats & 24/7 Vet Care",
+      description: "America's most trusted destination for pet parents. Save 35% on Autoship, enjoy free 1-2 day delivery, and connect with licensed veterinarians anytime.",
       theme: "chewy",
       themeAccent: "#128CED",
-      stage: 1,
-      currentSection: "blueprint",
-      navLinks: ["Dog Supplies", "Cat Essentials", "Pet Pharmacy", "Treats & Toys", "Autoship"],
+      stage: 6,
+      currentSection: "full_site",
+      navLinks: ["Dog Supplies", "Cat Essentials", "Pet Pharmacy", "Autoship"],
       heroCTA: "Autoship & Save 35%",
       heroSecondaryCTA: "Connect with a Vet",
       stats: [
@@ -61,147 +123,96 @@ export function synthesizeDomainWebsite(rawPrompt: string): WebsiteState {
         { label: "Happy Pets", value: "20M+", change: "Families Served" }
       ],
       features: [
-        { 
-          id: "1", 
-          title: "Autoship & Flexible Scheduling", 
-          desc: "Never run out of pet food or medications. Flexible delivery dates, instant skips, and 5% recurring savings on every order." 
-        },
-        { 
-          id: "2", 
-          title: "24/7 Licensed Pet Pharmacy", 
-          desc: "Prescription flea/tick, heartworm, and specialty medications verified directly with your vet and shipped to your door." 
-        },
-        { 
-          id: "3", 
-          title: "100% Pet Happiness Guarantee", 
-          desc: "If your pup or kitten doesn't absolutely love their new food, toy, or bed, return it anytime within 365 days." 
-        }
+        { id: "1", title: "Autoship & Flexible Scheduling", desc: "Never run out of pet food. Flexible delivery dates and recurring savings." },
+        { id: "2", title: "24/7 Licensed Pet Pharmacy", desc: "Prescription medications verified with your vet and shipped to your door." },
+        { id: "3", title: "365-Day Guarantee", desc: "If your pet doesn't love it, return it anytime within a year." }
       ],
-      categoryTabs: ["All", "Dog Food", "Cat Essentials", "Pet Pharmacy", "Treats & Toys"],
+      categoryTabs: ["All", "Dog Food", "Cat Essentials", "Pet Pharmacy", "Toys"],
       items: [
-        { id: "CHW-01", name: "Blue Buffalo Life Protection Chicken & Brown Rice (30 lb)", status: "Best Seller", latency: "$64.98", category: "Dog Food" },
+        { id: "CHW-01", name: "Blue Buffalo Life Protection Chicken & Rice (30 lb)", status: "Best Seller", latency: "$64.98", category: "Dog Food" },
         { id: "CHW-02", name: "Purina Pro Plan High Protein Wet Cat Food (24pk)", status: "Popular", latency: "$38.49", category: "Cat Essentials" },
-        { id: "CHW-03", name: "KONG Classic Durable Rubber Dog Chew Toy (Large)", status: "In Stock", latency: "$14.99", category: "Treats & Toys" },
-        { id: "CHW-04", name: "Heartgard Plus Chewables for Dogs 26-50 lbs (6 Doses)", status: "Vet Verified", latency: "$44.99", category: "Pet Pharmacy" },
-        { id: "CHW-05", name: "Frisco 62-in Real Wood Multi-Cat Scratching Tree", status: "In Stock", latency: "$59.99", category: "Cat Essentials" },
-        { id: "CHW-06", name: "Greenies Original Dental Dog Treats Box (36 ct)", status: "Recommended", latency: "$34.98", category: "Treats & Toys" }
+        { id: "CHW-03", name: "KONG Classic Durable Rubber Dog Chew Toy", status: "In Stock", latency: "$14.99", category: "Toys" },
+        { id: "CHW-04", name: "Heartgard Plus Chewables for Dogs (6 Doses)", status: "Vet Verified", latency: "$44.99", category: "Pet Pharmacy" }
       ]
     };
   }
 
-  // 2. COFFEE / CAFE / BAKERY / RESTAURANT / FOOD / DINING
-  if (/coffee|cafe|bakery|restaurant|bistro|food|pizza|burger|sushi|taco|tea|roast|chef|dining|kitchen|brew/i.test(p)) {
-    const brand = /coffee|roast|brew|cafe/i.test(p) ? "Velvet Roast Coffee Co." : `${cleanedName} Artisan Kitchen`;
+  // 4. COFFEE / CAFE / BAKERY
+  if (/coffee|cafe|bakery|restaurant|bistro|food|pizza|burger|sushi|taco|tea|roast|brew/i.test(p)) {
     return {
-      title: brand,
+      title: "Velvet Roast Coffee Co.",
       tagline: "Single-Origin Artisan Roasts & Freshly Baked Daily Delicacies",
-      description: "Ethically harvested from high-altitude family micro-lots and roasted fresh every sunrise. Experience extraordinary notes of wild berry, dark cacao, and honeycomb.",
+      description: "Ethically harvested from high-altitude micro-lots and roasted fresh every sunrise. Notes of wild berry, dark cacao, and honeycomb.",
       theme: "amber",
       themeAccent: "#F59E0B",
-      stage: 1,
-      currentSection: "blueprint",
-      navLinks: ["Single Origin", "Espresso", "Cold Brew", "Subscriptions", "Brew Guides"],
+      stage: 6,
+      currentSection: "full_site",
+      navLinks: ["Single Origin", "Espresso", "Cold Brew", "Subscriptions"],
       heroCTA: "Subscribe for $18/mo",
-      heroSecondaryCTA: "View Tasting Menu",
+      heroSecondaryCTA: "View Menu",
       stats: [
-        { label: "Origin Countries", value: "14 Farms", change: "Direct Trade" },
+        { label: "Origin Farms", value: "14 Farms", change: "Direct Trade" },
         { label: "Roast Freshness", value: "48 Hours", change: "Direct to Door" },
         { label: "Customer Rating", value: "4.96 ★", change: "3,200+ Reviews" }
       ],
       features: [
-        { id: "1", title: "Micro-Batch Drum Roasting", desc: "Small-batch drum roasting tailored to highlight origin berry and cacao notes." },
-        { id: "2", title: "Direct Trade Guarantee", desc: "100% of farmers compensated at least 45% above the fair-trade price floor." },
-        { id: "3", title: "Compostable Eco-Pouch", desc: "Zero-plastic plant-based packaging that degrades naturally within 90 days." }
+        { id: "1", title: "Micro-Batch Drum Roasting", desc: "Small-batch roasting tailored to highlight origin berry and cacao notes." },
+        { id: "2", title: "Direct Trade Guarantee", desc: "Farmers compensated at least 45% above fair-trade price floor." },
+        { id: "3", title: "Compostable Eco-Pouch", desc: "Zero-plastic plant-based packaging degrading naturally in 90 days." }
       ],
       categoryTabs: ["All", "Single Origin", "Cold Brew", "Espresso", "Gear"],
       items: [
         { id: "ROAST-01", name: "Ethiopian Yirgacheffe Washed Heirloom", status: "In Stock", latency: "$21.00", category: "Single Origin" },
         { id: "ROAST-02", name: "Colombian Huila Geisha Reserve", status: "Limited Lot", latency: "$28.50", category: "Single Origin" },
         { id: "ROAST-03", name: "Nitro Cold Brew Concentrate (32oz)", status: "Best Seller", latency: "$16.00", category: "Cold Brew" },
-        { id: "ROAST-04", name: "Midnight Velvet Espresso Blend", status: "In Stock", latency: "$19.00", category: "Espresso" },
-        { id: "ROAST-05", name: "AeroPress Clear Precision Brewer", status: "Popular", latency: "$49.95", category: "Gear" }
+        { id: "ROAST-04", name: "Midnight Velvet Espresso Blend", status: "In Stock", latency: "$19.00", category: "Espresso" }
       ]
     };
   }
 
-  // 3. FASHION / FOOTWEAR / SNEAKERS / NIKE / APPAREL / LUXURY
-  if (/nike|adidas|shoe|sneaker|footwear|fashion|cloth|apparel|wear|luxury|watch|boutique|dress|streetwear/i.test(p)) {
-    const brand = /nike|shoe|sneaker/i.test(p) ? "AeroStep Footwear & Athletics" : `${cleanedName} Atelier`;
+  // 5. CYBERSECURITY / SOC / CLOUD DEVOPS
+  if (/security|cyber|incident|threat|pentest|audit|firewall|soc|infosec|devops/i.test(p)) {
     return {
-      title: brand,
-      tagline: "Performance Engineered Footwear & Modern Streetwear",
-      description: "Ultra-responsive carbon fiber propulsion paired with breathable recycled knit uppers. Engineered for personal best marathons and modern street aesthetic.",
-      theme: "emerald",
-      themeAccent: "#10B981",
-      stage: 1,
-      currentSection: "blueprint",
-      navLinks: ["New Arrivals", "Running Shoes", "Streetwear", "Accessories", "Sale"],
-      heroCTA: "Shop Collection",
-      heroSecondaryCTA: "Explore Innovation",
+      title: "SentinelShield Cybersecurity Ops",
+      tagline: "Autonomous Threat Detection & Zero-Trust Perimeter Defense",
+      description: "Real-time behavioral telemetry, automated honeypots, and instantaneous incident neutralization across multi-cloud infrastructure.",
+      theme: "cyber",
+      themeAccent: "#06B6D4",
+      stage: 6,
+      currentSection: "full_site",
+      navLinks: ["Threat Radar", "Firewall Matrix", "Intrusion Logs", "Compliance"],
+      heroCTA: "Launch Security Matrix",
+      heroSecondaryCTA: "Run Vulnerability Scan",
       stats: [
-        { label: "Express Delivery", value: "Free", change: "Over $75" },
-        { label: "Recycled Knit", value: "85%", change: "Eco-Certified" },
-        { label: "Customer Rating", value: "4.9 ★", change: "18,000+ Reviews" }
+        { label: "Active Nodes", value: "1,420", change: "+12" },
+        { label: "Attacks Neutralized", value: "48,910", change: "100% Mitigated" },
+        { label: "Response Latency", value: "<2ms", change: "Automated" }
       ],
       features: [
-        { id: "1", title: "Carbon Kinetic Plate", desc: "Dynamic energy return maximizing stride efficiency with minimum joint fatigue." },
-        { id: "2", title: "Breathable Aeroknit Mesh", desc: "Zone-mapped ventilation keeping your feet cool and dry over any distance." },
-        { id: "3", title: "30-Day Wear Test Trial", desc: "Run in them for 30 days. If you're not in love, return them no questions asked." }
+        { id: "1", title: "Autonomous SIEM Ingestion", desc: "Sub-millisecond log parsing and zero-trust perimeter rule enforcement." },
+        { id: "2", title: "Kernel Threat Sandboxing", desc: "Isolated virtual execution spaces neutralizing memory corruption exploits." },
+        { id: "3", title: "Continuous Compliance", desc: "Automated SOC2 Type II and ISO 27001 verification." }
       ],
-      categoryTabs: ["All", "Running", "Lifestyle", "Trail", "Accessories"],
+      categoryTabs: ["All", "Core", "Firewall", "Intrusion"],
       items: [
-        { id: "SHOE-01", name: "AeroStep Pro Carbon Marathon Racer", status: "Best Seller", latency: "$189.99", category: "Running" },
-        { id: "SHOE-02", name: "StreetPulse Retro High Leather Sneaker", status: "Trending", latency: "$139.99", category: "Lifestyle" },
-        { id: "SHOE-03", name: "TerrainGrip Waterproof Trail Runner", status: "In Stock", latency: "$159.99", category: "Trail" },
-        { id: "SHOE-04", name: "Seamless TechKnit Running Tee", status: "Popular", latency: "$48.00", category: "Accessories" }
+        { id: "SEC-01", name: "Gateway Sentinel Cluster Alpha", status: "Shielded", latency: "1ms", category: "Core" },
+        { id: "SEC-02", name: "Deep Packet Inspection Engine", status: "Active", latency: "2ms", category: "Firewall" },
+        { id: "SEC-03", name: "BGP DDoS Scrubbing Proxy", status: "Optimal", latency: "4ms", category: "Firewall" },
+        { id: "SEC-04", name: "Automated Regression Harness", status: "Passed", latency: "1ms", category: "Intrusion" }
       ]
     };
   }
 
-  // 4. REAL ESTATE / AIRBNB / HOUSING / VILLAS / TRAVEL
-  if (/real estate|property|realtor|house|home|apartment|villa|airbnb|hotel|resort|vacation|rental|condo|booking/i.test(p)) {
-    const brand = "Haven & Hearth Luxury Estates";
-    return {
-      title: brand,
-      tagline: "Curated Architectural Sanctuaries & Prime Coastal Residences",
-      description: "Discover bespoke private villas, panoramic waterfront penthouses, and tranquil mountain retreats hand-selected for discerning travelers and investors.",
-      theme: "amber",
-      themeAccent: "#F59E0B",
-      stage: 1,
-      currentSection: "blueprint",
-      navLinks: ["Exclusive Villas", "Penthouses", "Coastal Retreats", "Market Reports", "Concierge"],
-      heroCTA: "Explore Properties",
-      heroSecondaryCTA: "Schedule Private Tour",
-      stats: [
-        { label: "Portfolio Value", value: "$2.4B+", change: "Global Listings" },
-        { label: "Guest Satisfaction", value: "4.98 ★", change: "Superhost Verified" },
-        { label: "Private Concierge", value: "24/7", change: "White Glove" }
-      ],
-      features: [
-        { id: "1", title: "Vetted Architectural Mastery", desc: "Every estate audited across 120 structural, acoustic, and privacy standards." },
-        { id: "2", title: "Full-Service Private Staff", desc: "Dedicated private chefs, sommelier cellars, and chauffeur airport transfers." },
-        { id: "3", title: "Seamless Escrow & Booking", desc: "Encrypted instant reservation security with flexible cancellation protection." }
-      ],
-      categoryTabs: ["All", "Villas", "Penthouses", "Coastal", "Cabins"],
-      items: [
-        { id: "PROP-01", name: "Azure Horizon Waterfront Villa — Malibu, CA", status: "Available", latency: "$1,850/night", category: "Villas" },
-        { id: "PROP-02", name: "The Glass Penthouse at Hudson Yards — NYC", status: "Available", latency: "$3,200/night", category: "Penthouses" },
-        { id: "PROP-03", name: "Villa Bellagio Lakefront Sanctuary — Como, IT", status: "Booked", latency: "$2,400/night", category: "Coastal" },
-        { id: "PROP-04", name: "Nordic Cedar Hot Spring Chalet — Aspen, CO", status: "Available", latency: "$1,450/night", category: "Cabins" }
-      ]
-    };
-  }
-
-  // 5. CRYPTO / WEB3 / DEFI / TRADING
-  if (/crypto|coin|trading|web3|wallet|token|defi|blockchain|dex|solana|bitcoin|ethereum|finance|fintech/i.test(p)) {
+  // 6. CRYPTO / WEB3 / DEFI
+  if (/crypto|coin|trading|web3|wallet|token|defi|blockchain|dex|solana|bitcoin|ethereum|finance/i.test(p)) {
     return {
       title: "ApexChain Decentralized Terminal",
       tagline: "Ultra-Low Latency Cross-Chain Asset Terminal",
       description: "Institutional liquidity routing, zero-MEV execution, and trustless cross-chain atomic swaps across Ethereum, Solana, and Cosmos.",
       theme: "emerald",
       themeAccent: "#10B981",
-      stage: 1,
-      currentSection: "blueprint",
+      stage: 6,
+      currentSection: "full_site",
       navLinks: ["Markets", "DEX Terminal", "Staking Vaults", "Governance"],
       heroCTA: "Connect Wallet (0x...)",
       heroSecondaryCTA: "Explore Liquidity Vaults",
@@ -212,7 +223,7 @@ export function synthesizeDomainWebsite(rawPrompt: string): WebsiteState {
       ],
       features: [
         { id: "1", title: "MEV-Shielded Execution", desc: "Private mempool transaction routing eliminating frontrunning and sandwich attacks." },
-        { id: "2", title: "Cross-Chain Atomic Swaps", desc: "Trustless liquidity bridges across Ethereum, Solana, and Cosmos." },
+        { id: "2", title: "Cross-Chain Atomic Swaps", desc: "Trustless liquidity bridges across major L1 networks." },
         { id: "3", title: "Self-Custodial Vaults", desc: "Smart contract vaults with programmable multi-sig time locks." }
       ],
       categoryTabs: ["All", "Layer 1", "DeFi", "Perpetuals"],
@@ -225,40 +236,7 @@ export function synthesizeDomainWebsite(rawPrompt: string): WebsiteState {
     };
   }
 
-  // 6. CYBERSECURITY / SOC / CLOUD DEVOPS
-  if (/security|cyber|incident|threat|pentest|audit|firewall|soc|infosec|devops/i.test(p)) {
-    return {
-      title: "SentinelShield Cybersecurity Ops",
-      tagline: "Autonomous Threat Detection & Zero-Trust Perimeter Defense",
-      description: "Real-time behavioral telemetry, automated honeypots, and instantaneous incident neutralization across multi-cloud infrastructure.",
-      theme: "cyber",
-      themeAccent: "#06B6D4",
-      stage: 1,
-      currentSection: "blueprint",
-      navLinks: ["Threat Radar", "Firewall Matrix", "Intrusion Logs", "Compliance"],
-      heroCTA: "Launch Security Matrix",
-      heroSecondaryCTA: "Run Vulnerability Scan",
-      stats: [
-        { label: "Active Nodes", value: "1,420", change: "+12" },
-        { label: "Attacks Neutralized", value: "48,910", change: "100% Mitigated" },
-        { label: "Response Latency", value: "<2ms", change: "Automated" }
-      ],
-      features: [
-        { id: "1", title: "Autonomous SIEM Ingestion", desc: "Sub-millisecond log parsing and zero-trust perimeter rule enforcement." },
-        { id: "2", title: "Kernel Threat Sandboxing", desc: "Isolated virtual execution spaces neutralizing memory corruption exploits." },
-        { id: "3", title: "Continuous Compliance", desc: "Automated SOC2 Type II, ISO 27001, and HIPAA compliance verification." }
-      ],
-      categoryTabs: ["All", "Core", "Firewall", "Intrusion"],
-      items: [
-        { id: "SEC-01", name: "Gateway Sentinel Cluster Alpha", status: "Shielded", latency: "1ms", category: "Core" },
-        { id: "SEC-02", name: "Deep Packet Inspection Engine", status: "Active", latency: "2ms", category: "Firewall" },
-        { id: "SEC-03", name: "BGP DDoS Scrubbing Proxy", status: "Optimal", latency: "4ms", category: "Firewall" },
-        { id: "SEC-04", name: "Automated Regression Harness", status: "Passed", latency: "1ms", category: "Intrusion" }
-      ]
-    };
-  }
-
-  // 7. UNIVERSAL INTELLIGENT SYNTHESIS FOR ANY ARBITRARY PROMPT
+  // 7. UNIVERSAL DYNAMIC SYNTHESIS FOR ANY PROMPT
   const brandTitle = cleanedName.length > 28 ? cleanedName.slice(0, 28) : cleanedName;
   return {
     title: brandTitle,
@@ -266,9 +244,9 @@ export function synthesizeDomainWebsite(rawPrompt: string): WebsiteState {
     description: `Experience the next generation of ${cleanedName.toLowerCase()}. Crafted with meticulous attention to detail, accessible interaction design, and uncompromising performance.`,
     theme: "cyan",
     themeAccent: "#06B6D4",
-    stage: 1,
-    currentSection: "blueprint",
-    navLinks: ["Overview", "Capabilities", "Catalog", "Contact"],
+    stage: 6,
+    currentSection: "full_site",
+    navLinks: ["Overview", "Capabilities", "Catalog", "Support"],
     heroCTA: "Explore Platform",
     heroSecondaryCTA: "View Features",
     stats: [
