@@ -10,7 +10,7 @@ import { synthesizeDomainWebsite, WebsiteState } from './src/domainEngine';
 // Helper to generate dynamic, tailored agent steps that construct the website progressively
 function generateAutonomousFallback(task: string, historyLength: number) {
   const cleanTask = task.trim() || 'Modern SaaS Operations Platform';
-  const stage = (historyLength % 6) + 1; // Stages 1 to 6
+  const stage = Math.min(6, Math.max(1, historyLength)); // Stages 1 to 6 based on history length
   const domain = synthesizeDomainWebsite(cleanTask);
 
   const steps = [
@@ -24,8 +24,7 @@ function generateAutonomousFallback(task: string, historyLength: number) {
       websiteState: {
         ...domain,
         stage: 1,
-        currentSection: "blueprint",
-        features: []
+        currentSection: "blueprint"
       }
     },
     {
@@ -38,8 +37,7 @@ function generateAutonomousFallback(task: string, historyLength: number) {
       websiteState: {
         ...domain,
         stage: 2,
-        currentSection: "hero",
-        features: []
+        currentSection: "hero"
       }
     },
     {
@@ -119,7 +117,7 @@ async function startServer() {
     const promptText = task.trim();
     const safeHistory = Array.isArray(history) ? history : [];
     const stepCount = safeHistory.length;
-    const stageNum = Math.min(6, (stepCount % 6) + 1);
+    const stageNum = Math.min(6, Math.max(1, stepCount));
 
     // Contextual recent messages to allow agents to debate and input ideas based on each other's feedback
     const recentDialogue = safeHistory
